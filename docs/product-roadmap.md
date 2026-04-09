@@ -19,6 +19,8 @@ A modern, scalable AI chat application that provides a seamless conversational e
 
 ## MVP (v0.1.0) - Foundation
 
+> **Tasks:** See `/tasks/001-009` for implementation details
+
 ### Authentication
 | Feature | Description | Priority |
 |---------|-------------|----------|
@@ -40,6 +42,8 @@ A modern, scalable AI chat application that provides a seamless conversational e
 ---
 
 ## Phase 1 (v1.0.0) - Essential Features
+
+> **Tasks:** See `/tasks/010-037` for implementation details
 
 ### Authentication & User Management
 | Feature | Description | Priority |
@@ -88,6 +92,8 @@ A modern, scalable AI chat application that provides a seamless conversational e
 ---
 
 ## Phase 2 (v1.1.0) - Enhanced Experience
+
+> **Tasks:** See `/tasks/038-065` for implementation details
 
 ### Advanced Chat Features
 | Feature | Description | Priority |
@@ -140,6 +146,8 @@ A modern, scalable AI chat application that provides a seamless conversational e
 
 ## Phase 3 (v2.0.0) - Advanced Features
 
+> **Tasks:** See `/tasks/066-084` for implementation details
+
 ### Collaboration
 | Feature | Description | Priority |
 |---------|-------------|----------|
@@ -179,6 +187,8 @@ A modern, scalable AI chat application that provides a seamless conversational e
 ---
 
 ## Technical Features (All Phases)
+
+> **Tasks:** See `/tasks/085-101` for implementation details
 
 ### Performance & Reliability
 | Feature | Description | Priority |

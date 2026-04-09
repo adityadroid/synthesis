@@ -85,19 +85,57 @@ Create a skill when:
 - Configuration-dependent setup
 
 ### Skill Structure
-
-```
-skills/
-├── skill_name/
-│   ├── description.md
-│   ├── instructions.md
-│   └── templates/
-```
+Skills are defined in `.opencode/skills/{skill-name}/SKILL.md` following OpenCode conventions.
 
 ### Existing Skills
 
 - `fastapi-crud` - Standard CRUD patterns for FastAPI routes
 - `clean-architecture` - Domain/application/infrastructure separation
+- `task-execution` - Execute individual tasks with completeness checks
+- `phase-execution` - Execute all tasks within a phase systematically
+
+---
+
+## Task Management
+
+### Task Directory
+All executable tasks are documented in `/tasks/`. Each task is a markdown file with:
+- Serial number (001-101) for ordering
+- Phase tag (MVP, Phase 1, Phase 2, Phase 3)
+- Description and requirements
+- Acceptance criteria (checkboxes)
+- Dependencies
+- Related file references
+
+### Task Structure
+```markdown
+# XXX: Task Title
+
+## Phase
+[Phase name]
+
+## Description
+[What this task does]
+
+## Requirements
+- [Requirement 1]
+- [Requirement 2]
+
+## Acceptance Criteria
+- [ ] Criterion 1
+- [ ] Criterion 2
+
+## Dependencies
+- [Task number]: [Task name]
+```
+
+### Execution Order
+Tasks are ordered by dependency:
+1. MVP (001-009) - Foundation
+2. Phase 1 (010-037) - Essential features
+3. Phase 2 (038-065) - Enhanced experience
+4. Phase 3 (066-084) - Advanced features
+5. Infrastructure (085-101) - Cross-cutting concerns
 
 ---
 

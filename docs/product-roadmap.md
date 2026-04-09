@@ -19,7 +19,9 @@ A modern, scalable AI chat application that provides a seamless conversational e
 
 ## MVP (v0.1.0) - Foundation
 
-> **Tasks:** See `/tasks/001-009` for implementation details
+> **Backend Tasks:** `/tasks/backend/003-006`
+> **Frontend Tasks:** `/tasks/frontend/009`
+> **Shared Tasks:** `/tasks/shared/001-002,004-008`
 
 ### Authentication
 | Feature | Description | Priority |
@@ -43,7 +45,9 @@ A modern, scalable AI chat application that provides a seamless conversational e
 
 ## Phase 1 (v1.0.0) - Essential Features
 
-> **Tasks:** See `/tasks/010-037` for implementation details
+> **Backend Tasks:** `/tasks/backend/023,025-026`
+> **Frontend Tasks:** `/tasks/frontend/018,022,027,029-037`
+> **Shared Tasks:** `/tasks/shared/010-017,019-021,024,028`
 
 ### Authentication & User Management
 | Feature | Description | Priority |
@@ -93,7 +97,9 @@ A modern, scalable AI chat application that provides a seamless conversational e
 
 ## Phase 2 (v1.1.0) - Enhanced Experience
 
-> **Tasks:** See `/tasks/038-065` for implementation details
+> **Backend Tasks:** `/tasks/backend/063-065`
+> **Frontend Tasks:** `/tasks/frontend/039,045,047-053,058-061`
+> **Shared Tasks:** `/tasks/shared/038,040-044,046,054-057,062`
 
 ### Advanced Chat Features
 | Feature | Description | Priority |
@@ -146,7 +152,9 @@ A modern, scalable AI chat application that provides a seamless conversational e
 
 ## Phase 3 (v2.0.0) - Advanced Features
 
-> **Tasks:** See `/tasks/066-084` for implementation details
+> **Backend Tasks:** `/tasks/backend/079-084`
+> **Frontend Tasks:** None in this phase (feature-heavy)
+> **Shared Tasks:** `/tasks/shared/066-078`
 
 ### Collaboration
 | Feature | Description | Priority |
@@ -188,7 +196,9 @@ A modern, scalable AI chat application that provides a seamless conversational e
 
 ## Technical Features (All Phases)
 
-> **Tasks:** See `/tasks/085-101` for implementation details
+> **Backend Tasks:** `/tasks/backend/085-101`
+> **Frontend Tasks:** None in this section (infrastructure-only)
+> **Shared Tasks:** None in this section
 
 ### Performance & Reliability
 | Feature | Description | Priority |

@@ -75,6 +75,21 @@ All executable tasks are documented in `/tasks/` with:
 - Requirements and acceptance criteria
 - Dependencies
 
+### Task Status Tracking
+
+Progress is tracked in [tasks/TRACKING.md](tasks/TRACKING.md):
+
+| Phase | Total | Backend | Frontend | Shared | Completed |
+|-------|-------|---------|----------|--------|-----------|
+| MVP | 9 | 2 | 1 | 6 | 0/9 |
+| Phase 1 | 31 | 3 | 16 | 12 | 0/31 |
+| Phase 2 | 26 | 3 | 14 | 9 | 0/26 |
+| Phase 3 | 19 | 6 | 0 | 13 | 0/19 |
+| Infrastructure | 17 | 17 | 0 | 0 | 0/17 |
+| **Total** | **102** | **31** | **31** | **40** | **0/102** |
+
+**To update status:** Edit `tasks/TRACKING.md` - change `pending` to `in_progress` when starting, then `completed` when done.
+
 ### Skills
 
 Agent skills for consistent execution:

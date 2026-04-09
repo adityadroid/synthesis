@@ -98,6 +98,27 @@ Skills are defined in `.opencode/skills/{skill-name}/SKILL.md` following OpenCod
 
 ## Task Management
 
+### Task Tracking System
+All tasks are tracked in `tasks/TRACKING.md`. This file is the **source of truth** for task status.
+
+**Before starting work on any task:**
+1. Open `tasks/TRACKING.md`
+2. Find the task and verify its current status
+3. Update status from `pending` → `in_progress`
+4. Add notes if there are blockers or decisions made
+
+**After completing a task:**
+1. Update status from `in_progress` → `completed`
+2. Add a note with what was done or any relevant details
+3. If paired (BE + FE), ensure both are marked complete
+
+### Task Types
+| Type | Folder | Description |
+|------|--------|-------------|
+| `be` | `/tasks/backend/` | Backend-only tasks |
+| `fe` | `/tasks/frontend/` | Frontend-only tasks |
+| `both` | `/tasks/shared/` | Tasks requiring BE + FE coordination |
+
 ### Task Directory
 All executable tasks are documented in `/tasks/`. Each task is a markdown file with:
 - Serial number (001-101) for ordering
@@ -175,6 +196,23 @@ test: add unit tests for message truncation
 
 ## Testing
 
+### Testing Standards
+
+#### Backend Tests
+| Level | Coverage Target | Tools |
+|-------|----------------|-------|
+| Unit | 80%+ domain logic | pytest, pytest-asyncio |
+| Integration | All API endpoints | httpx, pytest |
+| E2E | Critical flows only | pytest |
+
+#### Frontend Tests
+| Level | Coverage Target | Tools |
+|-------|----------------|-------|
+| Unit | 70%+ components/utils | Vitest, React Testing Library |
+| Integration | Key user flows | Playwright |
+| E2E | Happy path | Playwright |
+
+### Test Execution
 | Level | Scope | When |
 |-------|-------|------|
 | Unit | Domain logic | Always |

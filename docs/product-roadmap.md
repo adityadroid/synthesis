@@ -1,4 +1,4 @@
-# AI Chat - Product Roadmap
+# Synthesis - Product Roadmap
 
 ## Vision
 

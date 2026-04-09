@@ -22,7 +22,7 @@ app.add_middleware(
 @app.get("/health")
 async def health_check() -> dict:
     """Health check endpoint."""
-    return {"status": "ok", "message": "AI Chat backend is running"}
+    return {"status": "ok", "message": "Synthesis backend is running"}
 
 
 @app.get("/api/health")

@@ -1,4 +1,4 @@
-# AI Chat
+# Synthesis
 
 A modern, scalable AI chat application with multi-LLM support, streaming responses, and enterprise-grade features.
 

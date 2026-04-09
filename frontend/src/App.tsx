@@ -8,7 +8,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<h1>AI Chat - Loading...</h1>} />
+          <Route path="/" element={<h1>Synthesis - Loading...</h1>} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>

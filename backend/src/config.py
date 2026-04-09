@@ -7,12 +7,12 @@ class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
 
     # App settings
-    app_name: str = "AI Chat"
+    app_name: str = "Synthesis"
     debug: bool = True
     secret_key: str = "dev-secret-key-change-in-production"
 
     # Database - using SQLite for local development
-    database_url: str = "sqlite+aiosqlite:///./aichat.db"
+    database_url: str = "sqlite+aiosqlite:///./synthesis.db"
 
     # LLM API Keys (optional - can be set later)
     openai_api_key: str = ""

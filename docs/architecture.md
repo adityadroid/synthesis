@@ -1,4 +1,4 @@
-# AI Chat Application Architecture
+# Synthesis Architecture
 
 ## Philosophy
 

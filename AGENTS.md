@@ -1,4 +1,4 @@
-# AI Chat - Agent Guidelines
+# Synthesis - Agent Guidelines
 
 ## Core Principles
 

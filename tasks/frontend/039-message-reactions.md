@@ -18,5 +18,9 @@ Allow thumbs up/down and emoji reactions on messages.
 - [ ] Can remove own reactions
 - [ ] Reactions are user-scoped
 
+## Related Files
+- `frontend/src/api/types.ts` - Reactions type
+- `frontend/src/components/Chat/Message.tsx` - Reaction buttons
+
 ## Dependencies
 - 009: Message Display with Roles

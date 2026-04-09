@@ -18,5 +18,9 @@ Implement keyboard shortcuts for power users.
 - [ ] Shortcuts displayed in UI
 - [ ] Customizable shortcuts (future)
 
+## Related Files
+- `frontend/src/hooks/useKeyboardShortcuts.ts` - Shortcut handling
+- `frontend/src/components/ui/CommandPalette.tsx` - Cmd+K palette
+
 ## Dependencies
 - 009: Message Display with Roles

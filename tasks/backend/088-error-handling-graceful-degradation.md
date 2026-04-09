@@ -18,5 +18,9 @@ Implement robust error handling throughout the application.
 - [ ] Errors logged with context
 - [ ] No stack traces exposed
 
+## Related Files
+- `src/main.py` - FastAPI exception handlers
+- `src/services/llm.py` - LLM error handling
+
 ## Dependencies
 - 006: Send Message to LLM

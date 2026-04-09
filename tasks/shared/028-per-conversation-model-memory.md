@@ -17,6 +17,11 @@ Remember model selection for each conversation thread.
 - [ ] Can override per conversation
 - [ ] User default for new conversations
 
+## Related Files
+- `src/models/conversation.py` - Add model_id field
+- `src/services/conversation.py` - Load/save model selection
+- `src/services/chat.py` - Use conversation's model
+
 ## Dependencies
 - 017: Multiple Conversations
 - 027: Model Selector Dropdown

@@ -18,5 +18,9 @@ Implement rate limiting to prevent API abuse.
 - [ ] Shows retry-after header
 - [ ] Admin can view limits
 
+## Related Files
+- `src/services/rate_limit.py` - Rate limiting logic
+- `src/main.py` - Middleware registration
+
 ## Dependencies
 - 005: Protected Routes Middleware

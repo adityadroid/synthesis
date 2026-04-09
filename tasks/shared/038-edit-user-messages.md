@@ -18,5 +18,10 @@ Allow editing of already-sent user messages.
 - [ ] Saves and shows edited version
 - [ ] Triggers new AI response
 
+## Related Files
+- `src/models/chat.py` - Message update schema
+- `src/services/chat.py` - Update message logic
+- `src/routes/chat.py` - PATCH /chat/messages/:id endpoint
+
 ## Dependencies
 - 009: Message Display with Roles

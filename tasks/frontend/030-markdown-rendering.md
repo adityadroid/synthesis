@@ -19,5 +19,9 @@ Render markdown content in messages (code blocks, lists, headers).
 - [ ] Consistent with standard renderers
 - [ ] Code blocks render with language
 
+## Related Files
+- `frontend/src/components/Chat/MessageContent.tsx` - Markdown renderer
+- `frontend/package.json` - Add react-markdown
+
 ## Dependencies
 - 009: Message Display with Roles

@@ -18,5 +18,8 @@ Implement efficient database connection management.
 - [ ] Connection errors handled
 - [ ] Metrics visible
 
+## Related Files
+- `src/db.py` - Connection pool configuration
+
 ## Dependencies
 - 006: Send Message to LLM

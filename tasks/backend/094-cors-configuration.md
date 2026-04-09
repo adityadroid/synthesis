@@ -18,5 +18,8 @@ Configure Cross-Origin Resource Sharing properly.
 - [ ] Preflight requests handled
 - [ ] Credentials work when needed
 
+## Related Files
+- `src/main.py` - CORS middleware
+
 ## Dependencies
 - 005: Protected Routes Middleware

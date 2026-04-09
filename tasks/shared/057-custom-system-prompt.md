@@ -18,5 +18,10 @@ Set custom persona/instructions per conversation.
 - [ ] Affects AI responses
 - [ ] Clear/reset option
 
+## Related Files
+- `src/models/conversation.py` - System prompt field
+- `src/services/llm.py` - Use system prompt in context
+- `frontend/src/components/Chat/SystemPromptEditor.tsx` - Editor UI
+
 ## Dependencies
 - 017: Multiple Conversations

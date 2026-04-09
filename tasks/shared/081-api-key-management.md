@@ -18,5 +18,10 @@ Personal API keys for external programmatic access.
 - [ ] Usage tracked per key
 - [ ] Can revoke keys
 
+## Related Files
+- `src/services/auth.py` - API key generation
+- `src/routes/auth.py` - API key endpoints
+- `src/config.py` - API key settings
+
 ## Dependencies
 - 066: Workspaces and Organizations

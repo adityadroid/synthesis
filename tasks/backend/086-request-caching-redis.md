@@ -18,5 +18,9 @@ Cache repeated queries for performance.
 - [ ] Automatic expiration
 - [ ] Manual purge option
 
+## Related Files
+- `src/db.py` - Redis cache integration
+- `src/services/cache.py` - Cache service
+
 ## Dependencies
 - 006: Send Message to LLM

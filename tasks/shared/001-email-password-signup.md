@@ -21,10 +21,10 @@ Implement user registration with email and password validation.
 - [ ] Password is stored as hash, never plaintext
 
 ## Related Files
-- `src/aichat/domain/entities/user.py`
-- `src/aichat/application/use_cases/auth/signup.py`
-- `src/aichat/infrastructure/repositories/user_repository.py`
-- `src/aichat/presentation/api/v1/auth.py`
+- `src/models/auth.py` - Pydantic schemas (signup request/response)
+- `src/services/auth.py` - Signup logic
+- `src/routes/auth.py` - POST /auth/signup endpoint
+- `src/db.py` - Database connection
 
 ## Dependencies
 - None (foundational)

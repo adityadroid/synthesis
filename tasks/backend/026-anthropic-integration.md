@@ -18,5 +18,9 @@ Integrate Claude models via Anthropic API.
 - [ ] Claude returns appropriate responses
 - [ ] Handles Claude-specific requirements
 
+## Related Files
+- `src/services/llm.py` - Anthropic client implementation
+- `src/config.py` - ANTHROPIC_API_KEY
+
 ## Dependencies
 - 025: OpenAI Integration

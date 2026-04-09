@@ -18,5 +18,10 @@ Enterprise single sign-on integration.
 - [ ] User created on first login
 - [ ] Roles mapped correctly
 
+## Related Files
+- `src/services/auth.py` - SAML authentication
+- `src/routes/auth.py` - SSO endpoints
+- `src/config.py` - SAML configuration
+
 ## Dependencies
 - 066: Workspaces and Organizations

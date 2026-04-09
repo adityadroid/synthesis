@@ -18,5 +18,9 @@ Implement real-time token streaming for LLM responses.
 - [ ] Error during stream is communicated
 - [ ] Final message stored in DB
 
+## Related Files
+- `src/services/llm.py` - Streaming LLM responses
+- `src/routes/chat.py` - SSE /chat/stream/{conversation_id} endpoint
+
 ## Dependencies
 - 006: Send Message to LLM

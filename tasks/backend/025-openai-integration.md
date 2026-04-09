@@ -18,5 +18,9 @@ Integrate GPT-4 and GPT-3.5 models.
 - [ ] Models return appropriate responses
 - [ ] API key stored securely
 
+## Related Files
+- `src/services/llm.py` - OpenAI client implementation
+- `src/config.py` - OPENAI_API_KEY
+
 ## Dependencies
 - 006: Send Message to LLM

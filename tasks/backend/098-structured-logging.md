@@ -18,5 +18,9 @@ JSON logs with context for debugging.
 - [ ] User ID when available
 - [ ] Appropriate log levels
 
+## Related Files
+- `src/config.py` - Logging configuration
+- `src/main.py` - Request ID middleware
+
 ## Dependencies
 - 005: Protected Routes Middleware

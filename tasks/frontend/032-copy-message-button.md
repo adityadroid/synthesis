@@ -18,5 +18,9 @@ One-click button to copy entire message.
 - [ ] Shows "Copied!" feedback
 - [ ] Works on mobile tap
 
+## Related Files
+- `frontend/src/components/Chat/Message.tsx` - Add copy button
+- `frontend/src/components/Chat/MessageList.tsx` - Hover state
+
 ## Dependencies
 - 009: Message Display with Roles

@@ -18,5 +18,9 @@ Request a new AI response to the same prompt.
 - [ ] Previous response replaced
 - [ ] Can regenerate multiple times
 
+## Related Files
+- `frontend/src/components/Chat/Message.tsx` - Regenerate button
+- `frontend/src/hooks/useChat.ts` - Regenerate logic
+
 ## Dependencies
 - 006: Send Message to LLM

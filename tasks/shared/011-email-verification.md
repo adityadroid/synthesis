@@ -18,5 +18,10 @@ Verify user email on signup via confirmation link.
 - [ ] Unverified users can login
 - [ ] Token expires after 24 hours
 
+## Related Files
+- `src/models/user.py` - User schema with email_verified flag
+- `src/services/auth.py` - Token generation/email sending
+- `src/routes/auth.py` - GET /auth/verify endpoint
+
 ## Dependencies
 - 001: Email/Password Signup

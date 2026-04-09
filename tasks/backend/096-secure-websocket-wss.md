@@ -18,6 +18,9 @@ Secure WebSocket connections with authentication.
 - [ ] Connections secured
 - [ ] Heartbeat working
 
+## Related Files
+- `src/routes/chat.py` - WSS endpoint with auth
+
 ## Dependencies
 - 003: JWT Session Management
 - 007: Streaming Responses via WebSocket

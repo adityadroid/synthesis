@@ -18,5 +18,9 @@ Export conversations as JSON for backup/import.
 - [ ] Can be re-imported
 - [ ] Schema documented
 
+## Related Files
+- `src/services/conversation.py` - Export logic
+- `src/routes/conversations.py` - GET /conversations/:id/export endpoint
+
 ## Dependencies
 - 040: Conversation Export - Markdown

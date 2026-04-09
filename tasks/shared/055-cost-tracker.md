@@ -18,5 +18,9 @@ Estimate and display costs per conversation.
 - [ ] Rates configurable
 - [ ] Updates with model changes
 
+## Related Files
+- `src/config.py` - Model pricing rates
+- `src/services/usage.py` - Cost calculation
+
 ## Dependencies
 - 054: Token Counter

@@ -18,5 +18,10 @@ Implement JWT-based authentication with refresh token rotation.
 - [ ] Expired tokens are rejected
 - [ ] Logout invalidates refresh token
 
+## Related Files
+- `src/services/auth.py` - JWT creation/validation
+- `src/routes/auth.py` - Token refresh endpoint
+- `src/config.py` - JWT settings
+
 ## Dependencies
 - 002: Email/Password Login

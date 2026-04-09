@@ -18,5 +18,10 @@ Implement theme switching with system preference detection.
 - [ ] Preference persists
 - [ ] All UI elements themed
 
+## Related Files
+- `frontend/src/hooks/useTheme.ts` - Theme management
+- `frontend/src/components/Chat/ThemeToggle.tsx` - Toggle button
+- `frontend/src/index.css` - Light/dark CSS variables
+
 ## Dependencies
 - 009: Message Display with Roles

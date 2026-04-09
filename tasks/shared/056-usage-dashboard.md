@@ -18,6 +18,11 @@ Display monthly usage statistics for user.
 - [ ] Export usage report
 - [ ] Real-time updates
 
+## Related Files
+- `src/routes/usage.py` - Usage statistics endpoints
+- `frontend/src/pages/UsageDashboard.tsx` - Usage charts UI
+- `frontend/src/api/client.ts` - GET /usage endpoint
+
 ## Dependencies
 - 054: Token Counter
 - 055: Cost Tracker

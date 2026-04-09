@@ -18,5 +18,9 @@ Use parameterized queries to prevent SQL injection.
 - [ ] No raw SQL without params
 - [ ] Tests for injection
 
+## Related Files
+- `src/db.py` - SQLAlchemy configuration
+- `src/models/` - ORM models
+
 ## Dependencies
 - 005: Protected Routes Middleware

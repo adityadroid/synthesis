@@ -18,5 +18,10 @@ Search across all user conversations.
 - [ ] Highlights matching text
 - [ ] Click navigates to message
 
+## Related Files
+- `src/services/message.py` - Full-text search
+- `src/routes/messages.py` - GET /messages/search endpoint
+- `frontend/src/components/Search/GlobalSearch.tsx` - Search UI
+
 ## Dependencies
 - 024: Conversation Search

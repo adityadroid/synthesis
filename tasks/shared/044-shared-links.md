@@ -18,5 +18,9 @@ Generate public read-only share URLs for conversations.
 - [ ] No authentication required to view
 - [ ] Owner can revoke link
 
+## Related Files
+- `src/services/conversation.py` - Share link generation
+- `src/routes/conversations.py` - POST /conversations/:id/share endpoint
+
 ## Dependencies
 - 020: Delete Conversation

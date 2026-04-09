@@ -18,5 +18,9 @@ Configurable rate limits for users and workspaces.
 - [ ] Users see usage
 - [ ] Graceful degradation
 
+## Related Files
+- `src/services/rate_limit.py` - Rate limit logic
+- `src/routes/admin.py` - Rate limit config endpoints
+
 ## Dependencies
 - 066: Workspaces and Organizations

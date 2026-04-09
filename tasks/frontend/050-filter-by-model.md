@@ -18,5 +18,8 @@ Filter messages by which model responded.
 - [ ] Filter persists during session
 - [ ] Clear filter shows all
 
+## Related Files
+- `frontend/src/components/Chat/FilterBar.tsx` - Model filter
+
 ## Dependencies
 - 029: Model Info Display in UI

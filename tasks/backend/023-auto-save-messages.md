@@ -18,5 +18,9 @@ Automatically save messages when sent.
 - [ ] No data loss on network errors
 - [ ] UI reflects saved state
 
+## Related Files
+- `src/services/chat.py` - Message persistence in chat flow
+- `src/routes/chat.py` - Auto-save in send endpoint
+
 ## Dependencies
 - 006: Send Message to LLM

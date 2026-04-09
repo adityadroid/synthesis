@@ -16,5 +16,11 @@ Render messages with appropriate roles (user/assistant) in UI.
 - [ ] API returns ordered message list
 - [ ] Timestamps included for display
 
+## Related Files
+- `frontend/src/api/types.ts` - Message type definitions
+- `frontend/src/api/client.ts` - API client
+- `frontend/src/components/Chat/MessageList.tsx` - Message display component
+- `frontend/src/hooks/useChat.ts` - Chat hook
+
 ## Dependencies
 - 006: Send Message to LLM

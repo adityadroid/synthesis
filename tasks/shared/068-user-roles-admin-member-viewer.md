@@ -18,5 +18,10 @@ Implement role-based access control in workspaces.
 - [ ] Admins can change roles
 - [ ] UI reflects permissions
 
+## Related Files
+- `src/models/workspace.py` - Role enum and permissions
+- `src/services/auth.py` - Role-based access checks
+- `src/routes/workspaces.py` - Role management endpoints
+
 ## Dependencies
 - 066: Workspaces and Organizations

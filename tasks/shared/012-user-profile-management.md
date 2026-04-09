@@ -18,5 +18,10 @@ Allow users to view and edit their profile settings.
 - [ ] Can update avatar URL
 - [ ] Changes persist to database
 
+## Related Files
+- `src/models/user.py` - User profile schema
+- `src/services/user.py` - Profile update logic
+- `src/routes/users.py` - GET/PATCH /users/me endpoints
+
 ## Dependencies
 - 005: Protected Routes Middleware

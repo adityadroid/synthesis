@@ -16,5 +16,10 @@ Implement single active chat thread per session.
 - [ ] Subsequent messages append to same conversation
 - [ ] Conversation persists across requests
 
+## Related Files
+- `src/models/conversation.py` - Conversation schema
+- `src/services/conversation.py` - Create/get conversation logic
+- `src/routes/chat.py` - Conversation handling in chat endpoint
+
 ## Dependencies
 - 006: Send Message to LLM

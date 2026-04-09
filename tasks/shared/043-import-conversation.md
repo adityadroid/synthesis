@@ -18,5 +18,9 @@ Load exported conversations back into the app.
 - [ ] Messages display correctly
 - [ ] Handles invalid files gracefully
 
+## Related Files
+- `src/services/conversation.py` - Import logic
+- `src/routes/conversations.py` - POST /conversations/import endpoint
+
 ## Dependencies
 - 041: Conversation Export - JSON

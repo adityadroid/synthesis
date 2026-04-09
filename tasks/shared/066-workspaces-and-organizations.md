@@ -18,5 +18,10 @@ Create team spaces for shared access.
 - [ ] Workspace-specific settings
 - [ ] Billing per workspace
 
+## Related Files
+- `src/models/workspace.py` - Workspace schema
+- `src/services/workspace.py` - Workspace logic
+- `src/routes/workspaces.py` - Workspace endpoints
+
 ## Dependencies
 - 017: Multiple Conversations

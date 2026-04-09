@@ -18,5 +18,11 @@ Display all user conversations in sidebar UI.
 - [ ] Title and preview visible
 - [ ] Efficient query with pagination
 
+## Related Files
+- `frontend/src/api/types.ts` - Conversation type
+- `frontend/src/api/client.ts` - GET /conversations
+- `frontend/src/components/Chat/Sidebar.tsx` - Conversation list
+- `frontend/src/hooks/useConversations.ts` - TanStack Query hook
+
 ## Dependencies
 - 017: Multiple Conversations

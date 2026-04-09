@@ -18,5 +18,9 @@ Configurable data retention for compliance.
 - [ ] Audit of deletions
 - [ ] Export before delete
 
+## Related Files
+- `src/services/maintenance.py` - Retention policies
+- `src/routes/admin.py` - Policy configuration
+
 ## Dependencies
 - 079: Activity Logs

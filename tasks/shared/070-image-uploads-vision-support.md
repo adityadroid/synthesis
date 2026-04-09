@@ -18,6 +18,11 @@ Support vision models with image uploads (GPT-4V, Claude).
 - [ ] Vision models respond
 - [ ] Error handling for non-vision models
 
+## Related Files
+- `src/services/llm.py` - Vision model support
+- `src/routes/chat.py` - Image upload handling
+- `frontend/src/components/Chat/ImageUploader.tsx` - Upload UI
+
 ## Dependencies
 - 025: OpenAI Integration
 - 026: Anthropic Integration

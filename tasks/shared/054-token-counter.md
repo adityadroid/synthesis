@@ -18,5 +18,9 @@ Display tokens used per message and conversation.
 - [ ] Accurate estimates for models
 - [ ] Updates on new messages
 
+## Related Files
+- `src/services/llm.py` - Token counting
+- `src/models/chat.py` - Token count in message schema
+
 ## Dependencies
 - 025: OpenAI Integration

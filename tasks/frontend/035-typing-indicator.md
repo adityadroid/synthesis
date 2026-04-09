@@ -18,5 +18,9 @@ Show "AI is thinking..." state during response generation.
 - [ ] Disappears when stream starts
 - [ ] Shows error state on failure
 
+## Related Files
+- `frontend/src/hooks/useChatStream.ts` - Typing state
+- `frontend/src/components/Chat/TypingIndicator.tsx` - Animated component
+
 ## Dependencies
 - 007: Streaming Responses via WebSocket

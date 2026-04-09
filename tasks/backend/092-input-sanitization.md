@@ -18,5 +18,9 @@ Prevent XSS with input sanitization.
 - [ ] No HTML injection
 - [ ] CSP headers set
 
+## Related Files
+- `src/models/chat.py` - Input validation
+- `src/main.py` - CSP middleware
+
 ## Dependencies
 - 005: Protected Routes Middleware

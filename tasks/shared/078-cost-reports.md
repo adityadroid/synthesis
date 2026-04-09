@@ -18,5 +18,9 @@ Detailed cost breakdown reports.
 - [ ] Budget notifications
 - [ ] Invoice generation
 
+## Related Files
+- `src/routes/usage.py` - Cost report endpoints
+- `src/services/usage.py` - Cost calculation
+
 ## Dependencies
 - 077: Usage Analytics Dashboard

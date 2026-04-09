@@ -18,6 +18,11 @@ Save and reuse AI configuration combinations.
 - [ ] One-click apply
 - [ ] Edit/delete presets
 
+## Related Files
+- `src/models/user.py` - Presets schema
+- `src/routes/presets.py` - Preset CRUD endpoints
+- `frontend/src/components/Chat/ModelSettings.tsx` - Preset UI
+
 ## Dependencies
 - 057: Custom System Prompt
 - 058: Temperature Slider

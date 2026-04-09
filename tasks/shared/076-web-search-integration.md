@@ -18,5 +18,9 @@ Enable real-time web search for AI responses.
 - [ ] Toggle for user control
 - [ ] Respects rate limits
 
+## Related Files
+- `src/services/search.py` - Search provider integration
+- `src/services/llm.py` - Tool use with search
+
 ## Dependencies
 - 075: Function Calling / Tool Use

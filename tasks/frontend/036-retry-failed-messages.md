@@ -18,5 +18,9 @@ Re-send messages that failed due to network or API errors.
 - [ ] Clears error indicator on success
 - [ ] Maintains message position
 
+## Related Files
+- `frontend/src/components/Chat/Message.tsx` - Retry button on error state
+- `frontend/src/hooks/useChat.ts` - Retry logic
+
 ## Dependencies
 - 006: Send Message to LLM

@@ -18,5 +18,9 @@ Show when messages were sent and received.
 - [ ] Absolute time on hover/click
 - [ ] Day separators in long conversations
 
+## Related Files
+- `frontend/src/api/types.ts` - Timestamp in message type
+- `frontend/src/components/Chat/Message.tsx` - Display timestamp
+
 ## Dependencies
 - 009: Message Display with Roles

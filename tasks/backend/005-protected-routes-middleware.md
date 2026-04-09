@@ -18,5 +18,10 @@ Add authentication middleware to protect API endpoints.
 - [ ] User context available in handlers
 - [ ] 401 returned with appropriate message
 
+## Related Files
+- `src/main.py` - FastAPI app with middleware
+- `src/services/auth.py` - Token validation
+- `src/routes/` - Protected endpoints
+
 ## Dependencies
 - 003: JWT Session Management

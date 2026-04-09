@@ -18,5 +18,9 @@ Adjust AI creativity/ randomness with temperature setting.
 - [ ] Affects response style
 - [ ] Persists per conversation
 
+## Related Files
+- `frontend/src/components/Chat/ModelSettings.tsx` - Temperature slider
+- `frontend/src/api/types.ts` - Model settings type
+
 ## Dependencies
 - 057: Custom System Prompt

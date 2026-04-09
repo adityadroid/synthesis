@@ -18,5 +18,9 @@ Connect to local Ollama for self-hosted models.
 - [ ] Streams responses
 - [ ] Shows connection status
 
+## Related Files
+- `src/services/llm.py` - Ollama client implementation
+- `src/config.py` - OLLAMA_BASE_URL
+
 ## Dependencies
 - 025: OpenAI Integration

@@ -18,5 +18,9 @@ Find conversations by title in sidebar.
 - [ ] Clear search restores full list
 - [ ] Empty results show appropriate message
 
+## Related Files
+- `src/services/conversation.py` - Search query
+- `src/routes/conversations.py` - GET /conversations?search= endpoint
+
 ## Dependencies
 - 018: Conversation List in Sidebar

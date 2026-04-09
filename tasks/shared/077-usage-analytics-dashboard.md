@@ -18,5 +18,9 @@ Per-user and per-org usage statistics.
 - [ ] Charts and graphs
 - [ ] CSV export
 
+## Related Files
+- `src/routes/usage.py` - Workspace usage endpoints
+- `frontend/src/pages/UsageAnalytics.tsx` - Analytics UI
+
 ## Dependencies
 - 056: Usage Dashboard

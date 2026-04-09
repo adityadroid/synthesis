@@ -18,5 +18,10 @@ Implement email-based password recovery.
 - [ ] Password updated successfully
 - [ ] Token single-use
 
+## Related Files
+- `src/models/auth.py` - Password reset schemas
+- `src/services/auth.py` - Reset token generation/validation
+- `src/routes/auth.py` - POST /auth/reset endpoints
+
 ## Dependencies
 - 001: Email/Password Signup

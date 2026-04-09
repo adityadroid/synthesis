@@ -18,5 +18,11 @@ Implement secure user authentication with email and password.
 - [ ] Invalid password returns 401
 - [ ] Token contains user_id and expiration
 
+## Related Files
+- `src/models/auth.py` - Pydantic schemas (login request/response)
+- `src/services/auth.py` - Login logic
+- `src/routes/auth.py` - POST /auth/login endpoint
+- `src/db.py` - Database connection
+
 ## Dependencies
 - 001: Email/Password Signup

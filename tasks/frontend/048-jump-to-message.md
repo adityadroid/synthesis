@@ -18,5 +18,9 @@ Navigate directly to a specific message.
 - [ ] Message highlighted briefly
 - [ ] URL reflects position
 
+## Related Files
+- `frontend/src/hooks/useChat.ts` - Jump to message function
+- `frontend/src/components/Chat/MessageList.tsx` - Auto-scroll
+
 ## Dependencies
 - 009: Message Display with Roles

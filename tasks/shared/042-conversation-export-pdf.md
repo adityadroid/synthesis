@@ -18,5 +18,9 @@ Export conversations as formatted PDF documents.
 - [ ] Code blocks preserved
 - [ ] Professional appearance
 
+## Related Files
+- `src/services/conversation.py` - PDF generation
+- `src/routes/conversations.py` - GET /conversations/:id/export endpoint
+
 ## Dependencies
 - 040: Conversation Export - Markdown

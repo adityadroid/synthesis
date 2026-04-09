@@ -18,5 +18,10 @@ Attach PDFs and documents for context.
 - [ ] Content passed to LLM
 - [ ] Handles large files
 
+## Related Files
+- `src/services/files.py` - File handling
+- `src/routes/chat.py` - File upload endpoint
+- `frontend/src/components/Chat/FileUploader.tsx` - Upload UI
+
 ## Dependencies
 - 070: Image Uploads - Vision Support

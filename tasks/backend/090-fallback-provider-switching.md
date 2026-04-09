@@ -18,5 +18,9 @@ Automatically switch providers on failure.
 - [ ] User notification
 - [ ] Fallback to cached response
 
+## Related Files
+- `src/services/llm.py` - Provider fallback logic
+- `src/config.py` - Provider configuration
+
 ## Dependencies
 - 089: Retry Logic

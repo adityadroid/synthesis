@@ -18,5 +18,9 @@ Application metrics for monitoring.
 - [ ] Key metrics available
 - [ ] Dashboards configured
 
+## Related Files
+- `src/routes/metrics.py` - Prometheus metrics endpoint
+- `src/config.py` - Metrics configuration
+
 ## Dependencies
 - 098: Structured Logging

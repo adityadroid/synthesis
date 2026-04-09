@@ -18,5 +18,9 @@ Apply language-specific coloring to code blocks.
 - [ ] Consistent with app theme
 - [ ] Copy button on code blocks
 
+## Related Files
+- `frontend/src/components/Chat/MessageContent.tsx` - Add syntax highlighting
+- `frontend/package.json` - Add react-syntax-highlighter
+
 ## Dependencies
 - 030: Markdown Rendering

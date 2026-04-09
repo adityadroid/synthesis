@@ -18,5 +18,9 @@ Audit trail of all user and system actions.
 - [ ] Filter by user/action
 - [ ] Export capability
 
+## Related Files
+- `src/services/logging.py` - Activity logging
+- `src/routes/admin.py` - Log viewing endpoints
+
 ## Dependencies
 - 066: Workspaces and Organizations

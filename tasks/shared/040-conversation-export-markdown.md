@@ -18,5 +18,9 @@ Export conversations as Markdown files.
 - [ ] Timestamps included
 - [ ] Downloads automatically
 
+## Related Files
+- `src/services/conversation.py` - Export logic
+- `src/routes/conversations.py` - GET /conversations/:id/export endpoint
+
 ## Dependencies
 - 020: Delete Conversation

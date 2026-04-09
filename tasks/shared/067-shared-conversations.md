@@ -18,5 +18,9 @@ Share conversations within team workspace.
 - [ ] Owner controls access
 - [ ] Notification on share
 
+## Related Files
+- `src/services/conversation.py` - Share logic
+- `src/routes/conversations.py` - POST /conversations/:id/share endpoint
+
 ## Dependencies
 - 066: Workspaces and Organizations

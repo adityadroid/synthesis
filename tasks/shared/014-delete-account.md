@@ -18,5 +18,10 @@ Allow users to permanently delete their account.
 - [ ] User cannot login after deletion
 - [ ] Deletion is irreversible
 
+## Related Files
+- `src/services/user.py` - Account deletion logic
+- `src/routes/auth.py` - DELETE /auth/account endpoint
+- `src/db.py` - Database operations
+
 ## Dependencies
 - 001: Email/Password Signup

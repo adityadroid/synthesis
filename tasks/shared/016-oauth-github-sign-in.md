@@ -18,5 +18,9 @@ Add GitHub OAuth authentication option.
 - [ ] JWT issued on success
 - [ ] Existing email accounts can link GitHub
 
+## Related Files
+- `src/services/auth.py` - OAuth logic
+- `src/routes/auth.py` - GET /auth/oauth/github, callback endpoints
+
 ## Dependencies
 - 015: OAuth - Google Sign In

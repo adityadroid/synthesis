@@ -217,16 +217,16 @@
 
 | Level | Coverage Target | Tools |
 |-------|----------------|-------|
-| Unit | 80%+ domain logic | pytest, pytest-asyncio |
-| Integration | All API endpoints | httpx, pytest |
+| Unit | Business logic in services | pytest, pytest-asyncio |
+| API | All endpoints | httpx, pytest |
 | E2E | Critical flows only | pytest |
 
 ### Frontend Tests
 
 | Level | Coverage Target | Tools |
 |-------|----------------|-------|
-| Unit | 70%+ components/utils | Vitest, React Testing Library |
-| Integration | Key user flows | Playwright |
+| Unit | Components, hooks, utils | Vitest, React Testing Library |
+| Integration | Key user flows | Vitest + MSW |
 | E2E | Happy path | Playwright |
 
 ---

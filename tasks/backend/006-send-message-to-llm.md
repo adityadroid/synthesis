@@ -19,5 +19,11 @@ Implement message sending to LLM provider with context.
 - [ ] LLM response is stored
 - [ ] Error handling for API failures
 
+## Related Files
+- `src/models/chat.py` - Pydantic schemas
+- `src/services/llm.py` - LLM provider logic
+- `src/routes/chat.py` - POST /chat/send endpoint
+- `src/config.py` - LLM API keys
+
 ## Dependencies
 - 005: Protected Routes Middleware

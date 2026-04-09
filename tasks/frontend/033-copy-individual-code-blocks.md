@@ -18,5 +18,8 @@ Copy button on each code block separately.
 - [ ] Shows copy confirmation
 - [ ] Button hidden until hover
 
+## Related Files
+- `frontend/src/components/Chat/CodeBlock.tsx` - Add copy button per block
+
 ## Dependencies
 - 031: Code Syntax Highlighting

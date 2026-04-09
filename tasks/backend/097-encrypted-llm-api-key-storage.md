@@ -18,5 +18,9 @@ Securely store user-provided LLM API keys.
 - [ ] Access logged
 - [ ] Can rotate keys
 
+## Related Files
+- `src/services/crypto.py` - Key encryption
+- `src/config.py` - Encryption key
+
 ## Dependencies
 - 025: OpenAI Integration

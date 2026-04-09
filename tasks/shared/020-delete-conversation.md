@@ -18,5 +18,9 @@ Permanently remove a conversation and all its messages.
 - [ ] Cannot recover after deletion
 - [ ] Returns 404 if not found
 
+## Related Files
+- `src/services/conversation.py` - Delete logic
+- `src/routes/conversations.py` - DELETE /conversations/:id endpoint
+
 ## Dependencies
 - 017: Multiple Conversations

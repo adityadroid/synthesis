@@ -18,6 +18,12 @@ UI dropdown to switch between available models.
 - [ ] Current selection visually indicated
 - [ ] Disabled models grayed out
 
+## Related Files
+- `frontend/src/api/types.ts` - Available models type
+- `frontend/src/components/Chat/ModelSelector.tsx` - Dropdown component
+- `frontend/src/hooks/useModels.ts` - Available models hook
+- `frontend/src/api/client.ts` - GET /models endpoint
+
 ## Dependencies
 - 025: OpenAI Integration
 - 026: Anthropic Integration

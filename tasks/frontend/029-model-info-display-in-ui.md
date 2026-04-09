@@ -18,5 +18,8 @@ Show current model name in chat interface.
 - [ ] Updates on model change
 - [ ] Matches design system
 
+## Related Files
+- `frontend/src/components/Chat/ChatHeader.tsx` - Model info display
+
 ## Dependencies
 - 027: Model Selector Dropdown

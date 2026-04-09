@@ -18,5 +18,10 @@ Pre-built prompt templates for common use cases.
 - [ ] Creates conversation with prompt
 - [ ] Filter by category
 
+## Related Files
+- `src/models/template.py` - Template schema
+- `src/routes/templates.py` - Template endpoints
+- `frontend/src/components/Chat/TemplateBrowser.tsx` - Template UI
+
 ## Dependencies
 - 017: Multiple Conversations

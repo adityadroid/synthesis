@@ -18,5 +18,13 @@ Integrate Sentry for error tracking.
 - [ ] Issues triaged
 - [ ] Releases tracked
 
+## Related Files
+- `src/main.py` - Sentry SDK initialization
+- `src/config.py` - SENTRY_DSN
+
+## Related Files
+- `src/main.py` - Sentry SDK initialization
+- `src/config.py` - SENTRY_DSN
+
 ## Dependencies
 - 088: Error Handling and Graceful Degradation

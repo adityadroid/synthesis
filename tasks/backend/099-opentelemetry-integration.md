@@ -18,5 +18,9 @@ Distributed tracing with OpenTelemetry.
 - [ ] Exported correctly
 - [ ] Viewable in UI
 
+## Related Files
+- `src/main.py` - OpenTelemetry instrumentation
+- `src/config.py` - OTEL exporter config
+
 ## Dependencies
 - 098: Structured Logging

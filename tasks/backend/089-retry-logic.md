@@ -18,5 +18,9 @@ Automatic retry for failed API requests.
 - [ ] Stops after max retries
 - [ ] Circuit breaker opens
 
+## Related Files
+- `src/services/llm.py` - Retry logic with tenacity
+- `src/config.py` - Retry configuration
+
 ## Dependencies
 - 088: Error Handling and Graceful Degradation

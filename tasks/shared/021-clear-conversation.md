@@ -17,5 +17,9 @@ Reset thread while keeping the conversation record.
 - [ ] Sidebar shows empty conversation
 - [ ] Original title preserved
 
+## Related Files
+- `src/services/conversation.py` - Clear messages logic
+- `src/routes/conversations.py` - DELETE /conversations/:id/messages endpoint
+
 ## Dependencies
 - 017: Multiple Conversations

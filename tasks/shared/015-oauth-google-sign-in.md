@@ -18,5 +18,10 @@ Add Google OAuth authentication option.
 - [ ] JWT issued on success
 - [ ] Existing email accounts can link Google
 
+## Related Files
+- `src/services/auth.py` - OAuth logic
+- `src/routes/auth.py` - GET /auth/oauth/google, callback endpoints
+- `src/config.py` - Google OAuth credentials
+
 ## Dependencies
 - 002: Email/Password Login

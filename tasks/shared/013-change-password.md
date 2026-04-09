@@ -18,6 +18,11 @@ Allow users to update their password from settings.
 - [ ] Password updated successfully
 - [ ] Error on incorrect current password
 
+## Related Files
+- `src/models/user.py` - Password change schema
+- `src/services/auth.py` - Password update logic
+- `src/routes/auth.py` - POST /auth/change-password endpoint
+
 ## Dependencies
 - 001: Email/Password Signup
 - 012: User Profile Management

@@ -18,5 +18,8 @@ Find messages within current conversation.
 - [ ] Prev/Next navigation
 - [ ] Efficient for long conversations
 
+## Related Files
+- `frontend/src/components/Chat/SearchBar.tsx` - In-conversation search
+
 ## Dependencies
 - 046: Global Message Search

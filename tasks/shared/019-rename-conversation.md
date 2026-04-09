@@ -17,5 +17,10 @@ Allow custom titles for conversation threads.
 - [ ] Empty title triggers auto-generation
 - [ ] Only owner can rename
 
+## Related Files
+- `src/models/conversation.py` - Update title schema
+- `src/services/conversation.py` - Update logic
+- `src/routes/conversations.py` - PATCH /conversations/:id endpoint
+
 ## Dependencies
 - 017: Multiple Conversations

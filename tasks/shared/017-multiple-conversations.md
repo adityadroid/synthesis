@@ -18,5 +18,10 @@ Enable users to create and manage unlimited chat threads.
 - [ ] Conversations are user-scoped
 - [ ] Default conversation created if none
 
+## Related Files
+- `src/models/conversation.py` - Conversation schema
+- `src/services/conversation.py` - Create conversation logic
+- `src/routes/conversations.py` - POST /conversations endpoint
+
 ## Dependencies
 - 008: Single Conversation Mode

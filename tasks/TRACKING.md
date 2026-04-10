@@ -11,15 +11,15 @@
 
 | # | Task | Type | Status | Notes |
 |---|------|------|--------|-------|
-| 001 | Email/Password Signup | both | pending | |
-| 002 | Email/Password Login | both | pending | |
-| 003 | JWT Session Management | be | pending | |
-| 004 | Logout | both | pending | |
-| 005 | Protected Routes Middleware | be | pending | |
-| 006 | Send Message to LLM | be | pending | |
-| 007 | Streaming Responses via WebSocket | both | pending | |
-| 008 | Single Conversation Mode | both | pending | |
-| 009 | Message Display with Roles | fe | pending | |
+| 001 | Email/Password Signup | both | completed | Implemented with bcrypt hashing |
+| 002 | Email/Password Login | both | completed | JWT tokens on successful login |
+| 003 | JWT Session Management | be | completed | Access + refresh token with expiry |
+| 004 | Logout | both | completed | Client-side token cleanup |
+| 005 | Protected Routes Middleware | be | completed | HTTPBearer + user validation |
+| 006 | Send Message to LLM | be | completed | OpenAI integration (demo mode without API key) |
+| 007 | Streaming Responses via SSE | both | completed | Server-Sent Events endpoint |
+| 008 | Single Conversation Mode | both | completed | Auto-create conversation on first message |
+| 009 | Message Display with Roles | fe | completed | User/assistant message components |
 
 ---
 
@@ -218,7 +218,7 @@
 | Level | Coverage Target | Tools |
 |-------|----------------|-------|
 | Unit | Business logic in services | pytest, pytest-asyncio |
-| API | All endpoints | httpx, pytest |
+| API | All API endpoints | httpx, pytest |
 | E2E | Critical flows only | pytest |
 
 ### Frontend Tests
@@ -244,7 +244,7 @@
 
 | Status | Count |
 |--------|-------|
-| pending | 102 |
+| pending | 93 |
 | in_progress | 0 |
-| completed | 0 |
+| completed | 9 |
 | cancelled | 0 |

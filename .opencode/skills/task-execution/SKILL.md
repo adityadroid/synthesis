@@ -1,3 +1,8 @@
+---
+name: task-execution
+description: Execute individual tasks with completeness and quality assurance
+---
+
 # Task Execution Skill
 
 ## Purpose

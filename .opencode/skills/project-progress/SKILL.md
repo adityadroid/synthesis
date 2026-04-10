@@ -1,3 +1,8 @@
+---
+name: project-progress
+description: Display intuitive project progress by parsing the task tracking board
+---
+
 # Project Progress Skill
 
 Displays intuitive project progress by parsing the task tracking board.

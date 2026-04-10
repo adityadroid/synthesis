@@ -1,3 +1,8 @@
+---
+name: fastapi-crud
+description: Standard CRUD patterns for FastAPI route handlers
+---
+
 # FastAPI CRUD Skill
 
 ## Purpose

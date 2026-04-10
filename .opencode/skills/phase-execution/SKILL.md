@@ -1,3 +1,8 @@
+---
+name: phase-execution
+description: Execute all tasks within a phase systematically with inter-task consistency
+---
+
 # Phase Execution Skill
 
 ## Purpose

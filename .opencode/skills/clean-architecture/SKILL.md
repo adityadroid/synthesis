@@ -1,3 +1,8 @@
+---
+name: clean-architecture
+description: Enforce domain/application/infrastructure separation in the codebase
+---
+
 # Clean Architecture Skill
 
 ## Purpose

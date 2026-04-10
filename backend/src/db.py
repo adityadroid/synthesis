@@ -35,6 +35,21 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 
 
 async def init_db() -> None:
-    """Initialize database tables."""
+    """Initialize database tables and run migrations."""
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        # Run migrations to add missing columns
+        await _run_migrations(conn)
+
+
+async def _run_migrations(conn) -> None:
+    """Add missing columns to existing tables."""
+    from sqlalchemy import text
+
+    # Get existing columns for messages table
+    result = await conn.execute(text("PRAGMA table_info(messages)"))
+    columns = [row[1] for row in result.fetchall()]
+
+    # Add 'model' column if it doesn't exist (Phase 1 feature)
+    if "model" not in columns:
+        await conn.execute(text("ALTER TABLE messages ADD COLUMN model VARCHAR(50)"))

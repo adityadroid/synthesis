@@ -1,6 +1,15 @@
 """Pydantic models for chat."""
 
 from pydantic import BaseModel, Field
+from typing import Optional
+
+
+class ImageContent(BaseModel):
+    """Image content for vision-enabled messages."""
+
+    type: str = "image"
+    url: str  # Base64 or URL
+    alt_text: str | None = None
 
 
 class SendMessageRequest(BaseModel):
@@ -9,6 +18,7 @@ class SendMessageRequest(BaseModel):
     message: str = Field(min_length=1)
     conversation_id: str | None = None
     model: str | None = None
+    images: list[ImageContent] | None = None
 
 
 class UpdateMessageRequest(BaseModel):
@@ -26,6 +36,7 @@ class MessageResponse(BaseModel):
     token_count: int | None
     created_at: str
     model: str | None = None
+    images: list[ImageContent] | None = None
 
     model_config = {"from_attributes": True}
 

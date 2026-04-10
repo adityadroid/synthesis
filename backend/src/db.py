@@ -53,3 +53,7 @@ async def _run_migrations(conn) -> None:
     # Add 'model' column if it doesn't exist (Phase 1 feature)
     if "model" not in columns:
         await conn.execute(text("ALTER TABLE messages ADD COLUMN model VARCHAR(50)"))
+
+    # Add 'images' column if it doesn't exist (Phase 3 - Image Uploads)
+    if "images" not in columns:
+        await conn.execute(text("ALTER TABLE messages ADD COLUMN images TEXT"))

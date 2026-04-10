@@ -69,6 +69,7 @@ async def add_message(
     role: MessageRole,
     content: str,
     token_count: int | None = None,
+    images: list[dict] | None = None,
 ) -> Message:
     """Add a message to a conversation."""
     message = Message(
@@ -77,6 +78,8 @@ async def add_message(
         content=content,
         token_count=token_count,
     )
+    if images:
+        message.set_images(images)
     db.add(message)
     await db.flush()
     await db.refresh(message)

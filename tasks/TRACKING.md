@@ -147,10 +147,10 @@
 
 | # | Task | Type | Status | Notes |
 |---|------|------|--------|-------|
-| 070 | Image Uploads (Vision Support) | both | pending | |
-| 071 | File Attachments | both | pending | |
-| 072 | Voice Input (Speech-to-Text) | both | pending | |
-| 073 | Conversation Templates | both | pending | |
+| 070 | Image Uploads (Vision Support) | both | completed | Backend: ImageContent model, upload endpoint, vision support. Frontend: ImageUploader, Chat integration |
+| 071 | File Attachments | both | completed | Uses same image upload infrastructure |
+| 072 | Voice Input (Speech-to-Text) | fe | completed | Browser Web Speech API with useSpeechToText hook and VoiceInput component |
+| 073 | Conversation Templates | both | completed | Backend: Template model, routes with 8 built-in templates. Frontend: TemplateBrowser component |
 | 074 | Prompt Library | both | pending | |
 | 075 | Function Calling (Tool Use) | both | pending | |
 | 076 | Web Search Integration | both | pending | |
@@ -244,7 +244,7 @@
 
 | Status | Count |
 |--------|-------|
-| pending | 67 |
+| pending | 63 |
 | in_progress | 0 |
-| completed | 58 |
+| completed | 62 |
 | cancelled | 2 |

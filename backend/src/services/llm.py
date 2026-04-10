@@ -25,7 +25,7 @@ class LLMService:
 
     async def chat(
         self,
-        messages: list[dict[str, str]],
+        messages: list[dict],
         model: str | None = None,
     ) -> str:
         """Send a chat request and get a non-streaming response."""
@@ -46,7 +46,7 @@ class LLMService:
 
     async def stream_chat(
         self,
-        messages: list[dict[str, str]],
+        messages: list[dict],
         model: str | None = None,
     ) -> AsyncGenerator[str, None]:
         """Send a chat request and yield tokens as they arrive."""
@@ -77,26 +77,50 @@ class LLMService:
         self,
         conversation_history: list,
         user_message: str,
-    ) -> list[dict[str, str]]:
-        """Build message format for OpenAI API."""
+        images: list[dict] | None = None,
+    ) -> list[dict]:
+        """
+        Build message format for OpenAI API.
+        Supports vision when images are provided.
+        """
         messages = []
 
         # Add conversation history
         for msg in conversation_history:
-            messages.append(
-                {
-                    "role": msg.role.value if hasattr(msg.role, "value") else msg.role,
-                    "content": msg.content,
-                }
-            )
+            role = msg.role.value if hasattr(msg.role, "value") else msg.role
 
-        # Add current user message
-        messages.append(
-            {
-                "role": "user",
-                "content": user_message,
-            }
-        )
+            # Check if message has images
+            msg_images = msg.get_images() if hasattr(msg, "get_images") else []
+
+            if msg_images:
+                # Message with images
+                content = [{"type": "text", "text": msg.content}]
+                for img in msg_images:
+                    content.append(
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": img.get("url", img)
+                                if isinstance(img, dict)
+                                else img
+                            },
+                        }
+                    )
+            else:
+                content = msg.content
+
+            messages.append({"role": role, "content": content})
+
+        # Add current user message with optional images
+        if images:
+            content = [{"type": "text", "text": user_message}]
+            for img in images:
+                content.append(
+                    {"type": "image_url", "image_url": {"url": img.get("url", img)}}
+                )
+            messages.append({"role": "user", "content": content})
+        else:
+            messages.append({"role": "user", "content": user_message})
 
         return messages
 

@@ -14,6 +14,8 @@ import { SystemPromptEditor } from "../components/Chat/SystemPromptEditor";
 import { ExportMenu } from "../components/Chat/ExportMenu";
 import { JumpToMessage } from "../components/Chat/JumpToMessage";
 import { MessageContent } from "../components/Chat/MessageContent";
+import { VoiceInput } from "../components/Chat/VoiceInput";
+import { TemplateBrowser } from "../components/Chat/TemplateBrowser";
 import { api, Message, Conversation } from "../api/client";
 
 function MessageBubble({
@@ -103,6 +105,19 @@ function MessageBubble({
           </div>
         ) : (
           <>
+            {/* Render images if present */}
+            {message.images && message.images.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-2">
+                {message.images.map((img, idx) => (
+                  <img
+                    key={idx}
+                    src={img.url}
+                    alt={img.alt_text || "Uploaded image"}
+                    className="max-w-[200px] max-h-[200px] rounded-lg object-cover"
+                  />
+                ))}
+              </div>
+            )}
             <MessageContent content={message.content} />
             <div className={`flex items-center gap-2 mt-1 ${isUser ? "justify-end" : ""}`}>
               {reactions.length > 0 && (
@@ -415,6 +430,8 @@ export function ChatPage() {
   const [showSystemPrompt, setShowSystemPrompt] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [showJumpToMessage, setShowJumpToMessage] = useState(false);
+  const [showVoiceInput, setShowVoiceInput] = useState(false);
+  const [showTemplateBrowser, setShowTemplateBrowser] = useState(false);
   const [currentModel, setCurrentModel] = useState<string | null>(null);
   const [highlightedMessageIndex, setHighlightedMessageIndex] = useState<number | null>(null);
   const [retryingMessageId, setRetryingMessageId] = useState<string | null>(null);
@@ -462,6 +479,11 @@ export function ChatPage() {
         createNewConversation();
         inputRef.current?.focus();
       },
+    },
+    {
+      id: "templates",
+      label: "Browse Templates",
+      action: () => setShowTemplateBrowser(true),
     },
     {
       id: "settings",
@@ -878,6 +900,29 @@ export function ChatPage() {
         <div className="px-4 py-4 border-t border-border">
           <form onSubmit={handleSubmit} className="max-w-3xl mx-auto">
             <div className="relative flex items-end gap-2">
+              {/* Voice Input */}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setShowVoiceInput(!showVoiceInput)}
+                  className="p-3 rounded-lg bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary/80 transition-colors"
+                  title="Voice input"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                  </svg>
+                </button>
+                {showVoiceInput && (
+                  <VoiceInput
+                    onTranscript={(text) => {
+                      setInput((prev) => prev + (prev ? " " : "") + text);
+                      setShowVoiceInput(false);
+                    }}
+                    disabled={isLoading}
+                  />
+                )}
+              </div>
+
               <textarea
                 ref={inputRef}
                 value={input}
@@ -961,6 +1006,17 @@ export function ChatPage() {
         isOpen={showJumpToMessage}
         onClose={() => setShowJumpToMessage(false)}
       />
+
+      {showTemplateBrowser && (
+        <TemplateBrowser
+          onSelect={(prompt) => {
+            setInput(prompt);
+            setShowTemplateBrowser(false);
+            inputRef.current?.focus();
+          }}
+          onClose={() => setShowTemplateBrowser(false)}
+        />
+      )}
     </div>
   );
 }

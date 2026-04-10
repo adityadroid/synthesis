@@ -33,6 +33,7 @@ async def send_message(
     """
     Send a message and get an immediate response (non-streaming).
     Creates a conversation if none exists.
+    Supports images for vision-enabled models.
     """
     # Get or create conversation
     if request.conversation_id:
@@ -56,16 +57,24 @@ async def send_message(
             db, conversation.id, request.model
         )
 
+    # Prepare images for storage
+    images_data = None
+    if request.images:
+        images_data = [
+            {"url": img.url, "type": img.type, "alt_text": img.alt_text}
+            for img in request.images
+        ]
+
     # Add user message to conversation
     user_message = await conversation_service.add_message(
-        db, conversation.id, MessageRole.USER, request.message
+        db, conversation.id, MessageRole.USER, request.message, images=images_data
     )
 
     # Get conversation history for context
     history = await conversation_service.get_conversation_messages(db, conversation.id)
 
-    # Build messages for LLM
-    messages = llm_service.build_messages(history, request.message)
+    # Build messages for LLM (with images support)
+    messages = llm_service.build_messages(history, request.message, images=images_data)
 
     # Get LLM response
     response_content = await llm_service.chat(messages)
@@ -89,6 +98,7 @@ async def send_message(
             token_count=assistant_message.token_count,
             created_at=assistant_message.created_at.isoformat(),
             model=assistant_message.model,
+            images=None,  # Assistant messages don't have images
         ),
         conversation=ConversationResponse(
             id=conversation.id,
@@ -154,6 +164,16 @@ async def get_messages(
             token_count=m.token_count,
             created_at=m.created_at.isoformat(),
             model=m.model,
+            images=[
+                {
+                    "type": img.get("type", "image"),
+                    "url": img.get("url", img),
+                    "alt_text": img.get("alt_text"),
+                }
+                for img in (m.get_images() if hasattr(m, "get_images") else [])
+            ]
+            if m.images
+            else None,
         )
         for m in messages
     ]
@@ -203,6 +223,7 @@ async def update_message(
         token_count=updated.token_count,
         created_at=updated.created_at.isoformat(),
         model=updated.model,
+        images=None,
     )
 
 
@@ -211,13 +232,14 @@ async def generate_stream(
     conversation_id: str,
     user_message: str,
     user_id: str,
+    images: list[dict] | None = None,
 ) -> AsyncGenerator[str, None]:
     """Generate streaming response."""
     # Get conversation history
     history = await conversation_service.get_conversation_messages(db, conversation_id)
 
-    # Build messages for LLM
-    messages = llm_service.build_messages(history, user_message)
+    # Build messages for LLM (with images support)
+    messages = llm_service.build_messages(history, user_message, images=images)
 
     # Stream the response
     full_response = ""
@@ -243,6 +265,7 @@ async def stream_message(
 ):
     """
     Send a message and get a streaming response via SSE.
+    Supports images for vision-enabled models.
     """
     # Verify conversation exists
     conversation = await conversation_service.get_conversation(
@@ -260,14 +283,24 @@ async def stream_message(
             db, conversation_id, request.model
         )
 
-    # Add user message
+    # Prepare images for storage
+    images_data = None
+    if request.images:
+        images_data = [
+            {"url": img.url, "type": img.type, "alt_text": img.alt_text}
+            for img in request.images
+        ]
+
+    # Add user message with images
     await conversation_service.add_message(
-        db, conversation_id, MessageRole.USER, request.message
+        db, conversation_id, MessageRole.USER, request.message, images=images_data
     )
 
     # Return streaming response
     return StreamingResponse(
-        generate_stream(db, conversation_id, request.message, user_id),
+        generate_stream(
+            db, conversation_id, request.message, user_id, images=images_data
+        ),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",

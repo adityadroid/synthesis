@@ -1,11 +1,11 @@
-import { useState, useCallback } from "react";
-import { api, Message, Conversation } from "../api/client";
+import { useState, useCallback, useEffect } from "react";
+import { api, Message, Conversation, ImageContent } from "../api/client";
 
 interface UseChatReturn {
   messages: Message[];
   isLoading: boolean;
   error: string | null;
-  sendMessage: (content: string, model?: string) => Promise<void>;
+  sendMessage: (content: string, model?: string, images?: ImageContent[]) => Promise<void>;
   conversations: Conversation[];
   loadConversations: () => Promise<void>;
   currentConversation: Conversation | null;
@@ -54,7 +54,7 @@ export function useChat(): UseChatReturn {
     }
   }, []);
 
-  const sendMessage = useCallback(async (content: string, model?: string) => {
+  const sendMessage = useCallback(async (content: string, model?: string, images?: ImageContent[]) => {
     if (!content.trim()) return;
     
     setIsLoading(true);
@@ -71,25 +71,73 @@ export function useChat(): UseChatReturn {
       token_count: null,
       created_at: new Date().toISOString(),
       model: selectedModel || null,
+      images: images || null,
     };
     setMessages((prev) => [...prev, userMessage]);
 
     try {
-      const response = await api.sendMessage(content, currentConversation?.id, selectedModel);
-      
-      // Update conversation if it's new
-      if (response.conversation && !currentConversation) {
-        setCurrentConversation(response.conversation);
-        await loadConversations();
-      }
+      // If we have a conversation, use streaming
+      if (currentConversation?.id) {
+        const assistantMessageId = `temp-assistant-${Date.now()}`;
+        let assistantContent = "";
 
-      // Update model if set
-      if (response.conversation?.model) {
-        setCurrentModel(response.conversation.model);
-      }
+        // Add placeholder for assistant message
+        const assistantMessage: Message = {
+          id: assistantMessageId,
+          role: "assistant",
+          content: "",
+          token_count: null,
+          created_at: new Date().toISOString(),
+          model: selectedModel || null,
+          images: null,
+        };
+        setMessages((prev) => [...prev, assistantMessage]);
 
-      // Add assistant message
-      setMessages((prev) => [...prev, response.message]);
+        // Stream the response
+        try {
+          for await (const chunk of api.streamMessage(currentConversation.id, content, selectedModel, images)) {
+            if (!chunk.done) {
+              assistantContent += chunk.content;
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === assistantMessageId
+                    ? { ...m, content: assistantContent }
+                    : m
+                )
+              );
+            }
+          }
+        } catch (streamErr) {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === assistantMessageId
+                ? { ...m, content: "Error: Failed to get response" }
+                : m
+            )
+          );
+          setError(streamErr instanceof Error ? streamErr.message : "Stream failed");
+        }
+      } else {
+        // No conversation yet, use send endpoint
+        const response = await api.sendMessage(content, currentConversation?.id, selectedModel, images);
+        
+        // Update conversation if it's new
+        if (response.conversation && !currentConversation) {
+          setCurrentConversation(response.conversation);
+          await loadConversations();
+        }
+
+        // Update model if set
+        if (response.conversation?.model) {
+          setCurrentModel(response.conversation.model);
+        }
+
+        // Replace optimistic message with real one and add assistant message
+        setMessages((prev) => {
+          const filtered = prev.filter((m) => m.id !== userMessage.id);
+          return [...filtered, response.message];
+        });
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to send message");
       // Remove optimistic message on error
@@ -150,12 +198,12 @@ export function useChat(): UseChatReturn {
   }, []);
 
   // Load messages and model when conversation changes
-  useState(() => {
+  useEffect(() => {
     if (currentConversation) {
       loadMessages(currentConversation.id);
       setCurrentModel(currentConversation.model);
     }
-  });
+  }, [currentConversation, loadMessages]);
 
   return {
     messages,

@@ -17,6 +17,12 @@ export interface TokenResponse {
 
 export type MessageRole = "user" | "assistant" | "system";
 
+export interface ImageContent {
+  type: string;
+  url: string;
+  alt_text: string | null;
+}
+
 export interface Message {
   id: string;
   role: MessageRole;
@@ -24,6 +30,7 @@ export interface Message {
   token_count: number | null;
   created_at: string;
   model: string | null;
+  images?: ImageContent[] | null;
 }
 
 export interface Conversation {
@@ -162,10 +169,20 @@ class ApiClient {
   }
 
   // Chat endpoints
-  async sendMessage(message: string, conversationId?: string, model?: string): Promise<ChatResponse> {
+  async sendMessage(
+    message: string, 
+    conversationId?: string, 
+    model?: string,
+    images?: ImageContent[]
+  ): Promise<ChatResponse> {
     return this.request<ChatResponse>("/chat/send", {
       method: "POST",
-      body: JSON.stringify({ message, conversation_id: conversationId, model }),
+      body: JSON.stringify({ 
+        message, 
+        conversation_id: conversationId, 
+        model,
+        images,
+      }),
     });
   }
 
@@ -209,11 +226,16 @@ class ApiClient {
   }
 
   // Streaming
-  async *streamMessage(conversationId: string, message: string): AsyncGenerator<StreamChunk> {
+  async *streamMessage(
+    conversationId: string, 
+    message: string,
+    model?: string,
+    images?: ImageContent[]
+  ): AsyncGenerator<StreamChunk> {
     const response = await fetch(`${this.baseUrl}/chat/stream/${conversationId}`, {
       method: "POST",
       headers: this.getHeaders(),
-      body: JSON.stringify({ message }),
+      body: JSON.stringify({ message, model, images }),
     });
 
     if (!response.ok) {
@@ -247,6 +269,26 @@ class ApiClient {
         }
       }
     }
+  }
+
+  // Upload endpoints
+  async uploadImage(file: File): Promise<{ url: string; type: string; size: number }> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const token = getAccessToken();
+    const response = await fetch(`${this.baseUrl}/upload/image`, {
+      method: 'POST',
+      headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ detail: 'Upload failed' }));
+      throw new Error(error.detail || `HTTP ${response.status}`);
+    }
+
+    return response.json();
   }
 }
 

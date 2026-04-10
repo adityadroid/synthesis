@@ -159,8 +159,8 @@
 
 | # | Task | Type | Status | Notes |
 |---|------|------|--------|-------|
-| 077 | Usage Analytics Dashboard | both | pending | |
-| 078 | Cost Reports | both | pending | |
+| 077 | Usage Analytics Dashboard | both | completed | Enhanced /usage/stats, /usage/dashboard with model breakdown |
+| 078 | Cost Reports | both | completed | /usage/cost-report with date ranges, top conversations |
 | 079 | Activity Logs | be | pending | |
 | 080 | Rate Limit Management | be | pending | |
 | 081 | API Key Management | both | pending | |
@@ -244,7 +244,7 @@
 
 | Status | Count |
 |--------|-------|
-| pending | 57 |
+| pending | 55 |
 | in_progress | 0 |
-| completed | 68 |
+| completed | 70 |
 | cancelled | 2 |

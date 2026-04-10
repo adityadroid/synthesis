@@ -203,7 +203,7 @@ class UsageTracker:
 
     def get_user_usage(self, user_id: str) -> dict:
         """Get usage statistics for a user."""
-        return self._usage.get(
+        usage = self._usage.get(
             user_id,
             {
                 "total_input_tokens": 0,
@@ -213,6 +213,11 @@ class UsageTracker:
                 "models": {},
             },
         )
+        # Calculate total message count
+        usage["message_count"] = sum(
+            m.get("message_count", 0) for m in usage.get("models", {}).values()
+        )
+        return usage
 
     def get_conversation_usage(self, user_id: str, conversation_id: str) -> dict:
         """Get usage for a specific conversation."""

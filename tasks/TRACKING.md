@@ -138,10 +138,10 @@
 
 | # | Task | Type | Status | Notes |
 |---|------|------|--------|-------|
-| 066 | Workspaces and Organizations | both | pending | |
-| 067 | Shared Conversations | both | pending | |
-| 068 | User Roles (Admin/Member/Viewer) | both | pending | |
-| 069 | Invite Team Members | both | pending | |
+| 066 | Workspaces and Organizations | both | completed | Workspace, Member, Invite models; CRUD endpoints |
+| 067 | Shared Conversations | both | completed | WorkspaceConversation model; share/unshare endpoints |
+| 068 | User Roles (Admin/Member/Viewer) | both | completed | WorkspaceRole enum; permission checks in routes |
+| 069 | Invite Team Members | both | completed | Invite flow with token; accept/revoke endpoints |
 
 ### Advanced AI Features
 
@@ -244,7 +244,7 @@
 
 | Status | Count |
 |--------|-------|
-| pending | 63 |
+| pending | 59 |
 | in_progress | 0 |
-| completed | 62 |
+| completed | 66 |
 | cancelled | 2 |

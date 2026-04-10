@@ -6,7 +6,17 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import Settings
 from .db import init_db
-from .routes import auth, users, chat, models, export, usage, upload, templates
+from .routes import (
+    auth,
+    users,
+    chat,
+    models,
+    export,
+    usage,
+    upload,
+    templates,
+    workspaces,
+)
 
 
 settings = Settings()
@@ -39,6 +49,7 @@ app.include_router(export.router, prefix="/api")
 app.include_router(usage.router, prefix="/api")
 app.include_router(upload.router, prefix="/api")
 app.include_router(templates.router, prefix="/api")
+app.include_router(workspaces.router, prefix="/api")
 
 
 @app.get("/health")

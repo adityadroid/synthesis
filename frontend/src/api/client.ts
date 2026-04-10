@@ -290,6 +290,62 @@ class ApiClient {
 
     return response.json();
   }
+
+  // Workspace endpoints
+  async getWorkspaces(): Promise<any[]> {
+    return this.request<any[]>('/workspaces');
+  }
+
+  async createWorkspace(data: { name: string; description?: string }): Promise<any> {
+    return this.request<any>('/workspaces', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getWorkspace(workspaceId: string): Promise<any> {
+    return this.request<any>(`/workspaces/${workspaceId}`);
+  }
+
+  async updateWorkspace(workspaceId: string, data: { name?: string; description?: string }): Promise<any> {
+    return this.request<any>(`/workspaces/${workspaceId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteWorkspace(workspaceId: string): Promise<void> {
+    return this.request<void>(`/workspaces/${workspaceId}`, { method: 'DELETE' });
+  }
+
+  async getWorkspaceMembers(workspaceId: string): Promise<any[]> {
+    return this.request<any[]>(`/workspaces/${workspaceId}/members`);
+  }
+
+  async removeWorkspaceMember(workspaceId: string, memberId: string): Promise<void> {
+    return this.request<void>(`/workspaces/${workspaceId}/members/${memberId}`, { method: 'DELETE' });
+  }
+
+  async getWorkspaceInvites(workspaceId: string): Promise<any[]> {
+    return this.request<any[]>(`/workspaces/${workspaceId}/invites`);
+  }
+
+  async createWorkspaceInvite(workspaceId: string, data: { email: string; role: string }): Promise<any> {
+    return this.request<any>(`/workspaces/${workspaceId}/invites`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async revokeWorkspaceInvite(workspaceId: string, inviteId: string): Promise<void> {
+    return this.request<void>(`/workspaces/${workspaceId}/invites/${inviteId}`, { method: 'DELETE' });
+  }
+
+  async acceptWorkspaceInvite(token: string): Promise<{ message: string; workspace_id: string }> {
+    return this.request<{ message: string; workspace_id: string }>(`/workspaces/invites/${token}/accept`, {
+      method: 'POST',
+    });
+  }
 }
 
 export const api = new ApiClient(API_BASE_URL);

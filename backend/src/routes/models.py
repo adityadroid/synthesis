@@ -2,7 +2,9 @@
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from ..db import get_db
 from ..services.llm_factory import llm_factory, LLMProvider
 from ..services.ollama import ollama_service
 from ..services.lm_studio import lm_studio_service

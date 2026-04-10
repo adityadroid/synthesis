@@ -1,14 +1,14 @@
 """Template routes."""
 
 import uuid
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, desc
+from sqlalchemy import select, desc, func, and_
 from pydantic import BaseModel
 from datetime import datetime
 
 from ..db import get_db
-from ..models.template import Template
+from ..models.template import Template, PromptRating
 from ..middleware.auth import get_current_user
 
 
@@ -45,6 +45,39 @@ class UpdateTemplateRequest(BaseModel):
     description: str | None = None
     prompt: str | None = None
     category: str | None = None
+    is_public: bool | None = None
+
+
+class PromptLibraryResponse(BaseModel):
+    """Prompt library item response."""
+
+    id: str
+    name: str
+    description: str | None
+    prompt: str
+    category: str
+    rating: float
+    rating_count: int
+    use_count: int
+    author_name: str | None
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class RatePromptRequest(BaseModel):
+    """Request to rate a prompt."""
+
+    rating: int  # 1-5
+
+
+class SubmitToLibraryRequest(BaseModel):
+    """Request to submit a prompt to the community library."""
+
+    name: str
+    description: str | None = None
+    prompt: str
+    category: str = "other"
 
 
 # Built-in templates
@@ -276,3 +309,230 @@ async def delete_template(
     await db.flush()
 
     return {"message": "Template deleted successfully"}
+
+
+# ==================== Prompt Library Endpoints ====================
+
+
+@router.get("/library", response_model=list[PromptLibraryResponse])
+async def get_prompt_library(
+    q: str | None = None,
+    category: str | None = None,
+    sort_by: str = "rating",
+    limit: int = Query(default=20, le=100),
+    offset: int = Query(default=0, ge=0),
+    db: AsyncSession = Depends(get_db),
+):
+    """Get community prompts from the library."""
+    # Build query for public, approved templates
+    query = select(
+        Template,
+        func.coalesce((Template.rating * Template.rating_count), 0).label(
+            "weighted_score"
+        ),
+    ).where(
+        Template.is_public == True,
+        Template.is_approved == True,
+        Template.is_builtin == False,
+    )
+
+    # Search filter
+    if q:
+        search_filter = f"%{q}%"
+        query = query.where(
+            (Template.name.ilike(search_filter))
+            | (Template.description.ilike(search_filter))
+            | (Template.prompt.ilike(search_filter))
+        )
+
+    # Category filter
+    if category:
+        query = query.where(Template.category == category)
+
+    # Sorting
+    if sort_by == "rating":
+        query = query.order_by(desc("weighted_score"), desc(Template.rating_count))
+    elif sort_by == "popular":
+        query = query.order_by(desc(Template.use_count))
+    elif sort_by == "recent":
+        query = query.order_by(desc(Template.created_at))
+    else:
+        query = query.order_by(desc("weighted_score"))
+
+    query = query.offset(offset).limit(limit)
+
+    result = await db.execute(query)
+    rows = result.all()
+
+    return [
+        PromptLibraryResponse(
+            id=t.Template.id,
+            name=t.Template.name,
+            description=t.Template.description,
+            prompt=t.Template.prompt,
+            category=t.Template.category,
+            rating=round(t.Template.rating, 1) if t.Template.rating else 0.0,
+            rating_count=t.Template.rating_count,
+            use_count=t.Template.use_count,
+            author_name=None,  # Would join with User table for this
+            created_at=t.Template.created_at,
+        )
+        for t in rows
+    ]
+
+
+@router.post("/library/submit", response_model=TemplateResponse)
+async def submit_to_library(
+    request: SubmitToLibraryRequest,
+    user_id: str = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Submit a prompt to the community library."""
+    # Create template as public
+    template = Template(
+        id=str(uuid.uuid4()),
+        name=request.name,
+        description=request.description,
+        prompt=request.prompt,
+        category=request.category,
+        user_id=user_id,
+        is_builtin=False,
+        is_public=True,
+        is_approved=True,  # Auto-approve for now, could add moderation
+        rating=0.0,
+        rating_count=0,
+    )
+    db.add(template)
+    await db.flush()
+    await db.refresh(template)
+
+    return TemplateResponse(
+        id=template.id,
+        name=template.name,
+        description=template.description,
+        prompt=template.prompt,
+        category=template.category,
+        is_builtin=False,
+        use_count=0,
+    )
+
+
+@router.post("/library/{template_id}/rate")
+async def rate_prompt(
+    template_id: str,
+    request: RatePromptRequest,
+    user_id: str = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Rate a prompt in the library (1-5 stars)."""
+    if request.rating < 1 or request.rating > 5:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Rating must be between 1 and 5",
+        )
+
+    # Check template exists and is public
+    result = await db.execute(
+        select(Template).where(
+            Template.id == template_id,
+            Template.is_public == True,
+            Template.is_builtin == False,
+        )
+    )
+    template = result.scalar_one_or_none()
+
+    if not template:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Prompt not found in library",
+        )
+
+    # Check existing rating
+    existing = await db.execute(
+        select(PromptRating).where(
+            PromptRating.template_id == template_id,
+            PromptRating.user_id == user_id,
+        )
+    )
+    existing_rating = existing.scalar_one_or_none()
+
+    if existing_rating:
+        # Update existing rating
+        old_rating = existing_rating.rating
+        existing_rating.rating = request.rating
+        # Recalculate average
+        total_rating = (
+            (template.rating * template.rating_count) - old_rating + request.rating
+        )
+        template.rating = round(total_rating / template.rating_count, 1)
+    else:
+        # Create new rating
+        rating = PromptRating(
+            id=str(uuid.uuid4()),
+            template_id=template_id,
+            user_id=user_id,
+            rating=request.rating,
+        )
+        db.add(rating)
+        # Update template rating
+        new_count = template.rating_count + 1
+        total_rating = (template.rating * template.rating_count) + request.rating
+        template.rating = round(total_rating / new_count, 1)
+        template.rating_count = new_count
+
+    await db.flush()
+
+    return {
+        "rating": template.rating,
+        "rating_count": template.rating_count,
+    }
+
+
+@router.get("/library/{template_id}/rate", response_model=dict)
+async def get_my_rating(
+    template_id: str,
+    user_id: str = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Get user's rating for a prompt."""
+    result = await db.execute(
+        select(PromptRating).where(
+            PromptRating.template_id == template_id,
+            PromptRating.user_id == user_id,
+        )
+    )
+    rating = result.scalar_one_or_none()
+
+    return {"rating": rating.rating if rating else None}
+
+
+@router.post("/library/{template_id}/use")
+async def use_library_prompt(
+    template_id: str,
+    user_id: str = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Use a prompt from the library (increments use count)."""
+    result = await db.execute(
+        select(Template).where(
+            Template.id == template_id,
+            Template.is_public == True,
+        )
+    )
+    template = result.scalar_one_or_none()
+
+    if not template:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Prompt not found in library",
+        )
+
+    template.use_count += 1
+    await db.flush()
+
+    return {
+        "id": template.id,
+        "name": template.name,
+        "prompt": template.prompt,
+        "use_count": template.use_count,
+    }

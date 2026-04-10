@@ -46,7 +46,32 @@ class Template(Base):
         String(36), ForeignKey("users.id"), nullable=True
     )
     use_count: Mapped[int] = mapped_column(Integer, default=0)
+    # Prompt library fields
+    is_public: Mapped[bool] = mapped_column(Boolean, default=False)
+    is_approved: Mapped[bool] = mapped_column(
+        Boolean, default=True
+    )  # Auto-approve user templates
+    rating: Mapped[float] = mapped_column(default=0.0)
+    rating_count: Mapped[int] = mapped_column(Integer, default=0)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
     )
+
+
+class PromptRating(Base):
+    """User ratings for community prompts."""
+
+    __tablename__ = "prompt_ratings"
+
+    id: Mapped[str] = mapped_column(
+        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
+    )
+    template_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("templates.id"), nullable=False
+    )
+    user_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("users.id"), nullable=False
+    )
+    rating: Mapped[int] = mapped_column(Integer, nullable=False)  # 1-5
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)

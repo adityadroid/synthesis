@@ -151,7 +151,7 @@
 | 071 | File Attachments | both | completed | Uses same image upload infrastructure |
 | 072 | Voice Input (Speech-to-Text) | fe | completed | Browser Web Speech API with useSpeechToText hook and VoiceInput component |
 | 073 | Conversation Templates | both | completed | Backend: Template model, routes with 8 built-in templates. Frontend: TemplateBrowser component |
-| 074 | Prompt Library | both | pending | |
+| 074 | Prompt Library | both | completed | Extended Template model with PromptRating, /library endpoints, search, ratings, submit |
 | 075 | Function Calling (Tool Use) | both | completed | ToolRegistry, ToolDefinition, calculator, text tools, web_search |
 | 076 | Web Search Integration | both | completed | SearchService with Serper/DuckDuckGo, integrated as tool |
 
@@ -161,17 +161,17 @@
 |---|------|------|--------|-------|
 | 077 | Usage Analytics Dashboard | both | completed | Enhanced /usage/stats, /usage/dashboard with model breakdown |
 | 078 | Cost Reports | both | completed | /usage/cost-report with date ranges, top conversations |
-| 079 | Activity Logs | be | pending | |
-| 080 | Rate Limit Management | be | pending | |
-| 081 | API Key Management | both | pending | |
+| 079 | Activity Logs | be | completed | ActivityLog model, ActivityLogService, /admin/activity-logs endpoints |
+| 080 | Rate Limit Management | be | completed | RateLimitConfig model, RateLimitService, tier-based limits, usage tracking |
+| 081 | API Key Management | both | completed | APIKey model with scopes, /api-keys CRUD routes, generate/revoke keys |
 
 ### Enterprise Features
 
 | # | Task | Type | Status | Notes |
 |---|------|------|--------|-------|
-| 082 | SSO/SAML Support | both | pending | |
-| 083 | Data Retention Policies | be | pending | |
-| 084 | Custom Model Support | both | pending | |
+| 082 | SSO/SAML Support | both | completed | SSOConfig model, SAML/OAuth routes, workspace SSO configuration |
+| 083 | Data Retention Policies | be | completed | RetentionPolicy model, MaintenanceService, auto-delete, audit logs |
+| 084 | Custom Model Support | both | completed | CustomModel model, /models/custom-models CRUD, performance tracking, A/B testing |
 
 ---
 

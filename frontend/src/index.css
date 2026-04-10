@@ -50,8 +50,9 @@
   --radius: 0.5rem;
 }
 
-/* CSS Variables */
-:root {
+/* CSS Variables - Dark theme (default) */
+:root,
+.dark {
   --background: #09090b;
   --foreground: #fafafa;
   --card: #18181b;
@@ -62,14 +63,38 @@
   --secondary-foreground: #fafafa;
   --muted: #27272a;
   --muted-foreground: #a1a1aa;
-  --accent: #27272a;
+  --accent: #6366f1;
   --accent-foreground: #fafafa;
+  --accent-hover: #4f46e5;
   --destructive: #ef4444;
   --destructive-foreground: #fafafa;
   --border: #3f3f46;
   --input: #3f3f46;
-  --ring: #71717a;
+  --ring: #6366f1;
   --radius: 0.5rem;
+  --font-size-base: 14px;
+}
+
+/* Light theme */
+.light {
+  --background: #ffffff;
+  --foreground: #09090b;
+  --card: #ffffff;
+  --card-foreground: #09090b;
+  --primary: #09090b;
+  --primary-foreground: #ffffff;
+  --secondary: #f4f4f5;
+  --secondary-foreground: #09090b;
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+  --accent: #6366f1;
+  --accent-foreground: #ffffff;
+  --accent-hover: #4f46e5;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #e4e4e7;
+  --input: #e4e4e7;
+  --ring: #6366f1;
 }
 
 /* Body Styles */
@@ -81,6 +106,13 @@ body {
   color: var(--foreground);
   line-height: 1.6;
   min-height: 100vh;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Font size application */
+body,
+.text-base {
+  font-size: var(--font-size-base, 14px);
 }
 
 #root {

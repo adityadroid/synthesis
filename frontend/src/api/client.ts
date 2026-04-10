@@ -147,6 +147,13 @@ class ApiClient {
     return this.request<Message[]>(`/chat/conversations/${conversationId}/messages`);
   }
 
+  async updateMessage(messageId: string, content: string): Promise<Message> {
+    return this.request<Message>(`/chat/messages/${messageId}`, {
+      method: "PATCH",
+      body: JSON.stringify({ content }),
+    });
+  }
+
   // Streaming
   async *streamMessage(conversationId: string, message: string): AsyncGenerator<StreamChunk> {
     const response = await fetch(`${this.baseUrl}/chat/stream/${conversationId}`, {

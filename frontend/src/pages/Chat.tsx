@@ -1,25 +1,170 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useChat } from "../hooks/useChat";
-import { Message } from "../api/client";
+import { useTheme } from "../hooks/useTheme";
+import { useKeyboardShortcuts, DEFAULT_SHORTCUTS } from "../hooks/useKeyboardShortcuts";
+import { useConversationSearch } from "../hooks/useSearch";
+import { useMessageReactions, ReactionPicker } from "../hooks/useMessageReactions.tsx";
+import { CommandPalette } from "../components/ui/CommandPalette";
+import { ThemeToggle } from "../components/Chat/ThemeToggle";
+import { SettingsPanel } from "../components/Chat/SettingsPanel";
+import { ModelSettings, AISettings } from "../components/Chat/ModelSettings";
+import { ModelSelector } from "../components/Chat/ModelSelector";
+import { SystemPromptEditor } from "../components/Chat/SystemPromptEditor";
+import { ExportMenu } from "../components/Chat/ExportMenu";
+import { JumpToMessage } from "../components/Chat/JumpToMessage";
+import { api, Message } from "../api/client";
 
-function MessageBubble({ message }: { message: Message; isNew?: boolean }) {
+function MessageBubble({
+  message,
+  onEdit,
+  isHighlighted,
+}: {
+  message: Message;
+  onEdit?: (messageId: string, content: string) => void;
+  isHighlighted?: boolean;
+}) {
   const isUser = message.role === "user";
-  
+  const [showActions, setShowActions] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editContent, setEditContent] = useState(message.content);
+  const [isSaving, setIsSaving] = useState(false);
+  const { getReactions, toggleReaction } = useMessageReactions();
+  const [showReactionPicker, setShowReactionPicker] = useState(false);
+  const reactions = getReactions(message.id);
+
+  const handleSaveEdit = async () => {
+    if (!editContent.trim() || editContent === message.content) {
+      setIsEditing(false);
+      return;
+    }
+    
+    setIsSaving(true);
+    try {
+      const updated = await api.updateMessage(message.id, editContent);
+      onEdit?.(message.id, updated.content);
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Failed to update message:", error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
-    <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
+    <div
+      className={`flex ${isUser ? "justify-end" : "justify-start"} ${
+        isHighlighted ? "ring-2 ring-ring ring-offset-2 ring-offset-background rounded-lg" : ""
+      }`}
+      onMouseEnter={() => setShowActions(true)}
+      onMouseLeave={() => {
+        setShowActions(false);
+        setShowReactionPicker(false);
+      }}
+    >
       <div
-        className={`max-w-[80%] px-4 py-3 rounded-lg ${
+        className={`max-w-[80%] px-4 py-3 rounded-lg relative group ${
           isUser
             ? "bg-primary text-primary-foreground"
             : "bg-secondary text-secondary-foreground"
         }`}
       >
-        <p className="whitespace-pre-wrap text-sm">{message.content}</p>
-        <div className={`flex items-center gap-2 mt-1 ${isUser ? "justify-end" : ""}`}>
-          <span className={`text-xs ${isUser ? "text-primary-foreground/50" : "text-muted-foreground"}`}>
-            {new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-          </span>
+        {isEditing ? (
+          <div className="space-y-2">
+            <textarea
+              value={editContent}
+              onChange={(e) => setEditContent(e.target.value)}
+              className="w-full min-h-[60px] px-2 py-1 bg-background text-foreground rounded border focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+              autoFocus
+            />
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={() => setIsEditing(false)}
+                className="px-2 py-1 text-xs bg-muted rounded hover:bg-muted/80"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveEdit}
+                className="px-2 py-1 text-xs bg-primary text-primary-foreground rounded hover:bg-primary/90"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <p className="whitespace-pre-wrap text-sm">{message.content}</p>
+            <div className={`flex items-center gap-2 mt-1 ${isUser ? "justify-end" : ""}`}>
+              {reactions.length > 0 && (
+                <div className="flex gap-1">
+                  {reactions.map((r) => (
+                    <button
+                      key={r.emoji}
+                      onClick={() => toggleReaction(message.id, r.emoji)}
+                      className={`flex items-center gap-0.5 px-1 py-0.5 text-xs rounded ${
+                        r.hasReacted ? "bg-accent/20" : "bg-muted/50"
+                      }`}
+                    >
+                      <span>{r.emoji}</span>
+                      <span>{r.count}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+              <span className={`text-xs ${isUser ? "text-primary-foreground/50" : "text-muted-foreground"}`}>
+                {new Date(message.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+              </span>
+            </div>
+          </>
+        )}
+
+        {/* Action buttons */}
+        {showActions && !isEditing && (
+          <div className={`absolute ${isUser ? "-left-16" : "-right-16"} top-0 flex gap-1`}>
+            {isUser && (
+              <button
+                onClick={() => setIsEditing(true)}
+                className="p-1.5 bg-muted rounded hover:bg-muted/80 text-xs"
+                title="Edit message"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+              </button>
+            )}
+            <button
+              onClick={() => navigator.clipboard.writeText(message.content)}
+              className="p-1.5 bg-muted rounded hover:bg-muted/80 text-xs"
+              title="Copy message"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+            </button>
+            <button
+              onClick={() => setShowReactionPicker(true)}
+              className="p-1.5 bg-muted rounded hover:bg-muted/80 text-xs"
+              title="Add reaction"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </button>
+          </div>
+        )}
+
+        {/* Reaction picker */}
+        <div className="relative">
+          <ReactionPicker
+            messageId={message.id}
+            isOpen={showReactionPicker}
+            onClose={() => setShowReactionPicker(false)}
+            onSelect={(emoji) => {
+              toggleReaction(message.id, emoji);
+              setShowReactionPicker(false);
+            }}
+          />
         </div>
       </div>
     </div>
@@ -32,9 +177,9 @@ function TypingIndicator() {
       <div className="bg-secondary px-4 py-3 rounded-lg border border-border">
         <div className="flex items-center gap-2">
           <div className="flex gap-1">
-            <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-            <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-            <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+            <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+            <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+            <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
           </div>
           <span className="text-xs text-muted-foreground ml-2">Thinking...</span>
         </div>
@@ -43,11 +188,11 @@ function TypingIndicator() {
   );
 }
 
-function ConversationItem({ 
-  conversation, 
-  isActive, 
-  onClick 
-}: { 
+function ConversationItem({
+  conversation,
+  isActive,
+  onClick,
+}: {
   conversation: { id: string; title: string | null; created_at: string };
   isActive: boolean;
   onClick: () => void;
@@ -61,23 +206,7 @@ function ConversationItem({
           : "text-muted-foreground hover:bg-secondary hover:text-foreground"
       }`}
     >
-      <span className="truncate block">
-        {conversation.title || "New Chat"}
-      </span>
-    </button>
-  );
-}
-
-function NewChatButton({ onClick }: { onClick: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 font-medium rounded-md transition-colors"
-    >
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-      </svg>
-      <span>New Chat</span>
+      <span className="truncate block">{conversation.title || "New Chat"}</span>
     </button>
   );
 }
@@ -95,11 +224,87 @@ export function ChatPage() {
     setCurrentConversation,
     createNewConversation,
   } = useChat();
-  
+  const { resolvedTheme } = useTheme();
+
+  // UI state
   const [input, setInput] = useState("");
+  const [showSettings, setShowSettings] = useState(false);
+  const [showModelSettings, setShowModelSettings] = useState(false);
+  const [showModelSelector, setShowModelSelector] = useState(false);
+  const [showSystemPrompt, setShowSystemPrompt] = useState(false);
+  const [showExportMenu, setShowExportMenu] = useState(false);
+  const [showJumpToMessage, setShowJumpToMessage] = useState(false);
+  const [currentModel, setCurrentModel] = useState<string | null>(null);
+  const [aiSettings, setAiSettings] = useState<AISettings | null>(null);
+  const [highlightedMessageIndex, setHighlightedMessageIndex] = useState<number | null>(null);
+
+  // Refs
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const messageRefs = useRef<(HTMLDivElement | null)[]>([]);
 
+  // Search
+  const { query: searchQuery, setQuery: setSearchQuery, matches, currentMatch } = useConversationSearch(messages);
+
+  // Keyboard shortcuts
+  const shortcuts = [
+    ...DEFAULT_SHORTCUTS,
+    {
+      key: "n",
+      modifiers: ["meta"],
+      description: "New conversation",
+      action: () => {
+        createNewConversation();
+        inputRef.current?.focus();
+      },
+    },
+    {
+      key: "s",
+      modifiers: ["meta"],
+      description: "Toggle settings",
+      action: () => setShowSettings((v) => !v),
+    },
+  ];
+  const { isCommandPaletteOpen, openCommandPalette, closeCommandPalette } = useKeyboardShortcuts(shortcuts);
+
+  // Command palette items
+  const commandItems = [
+    {
+      id: "new-chat",
+      label: "New Chat",
+      action: () => {
+        createNewConversation();
+        inputRef.current?.focus();
+      },
+    },
+    {
+      id: "settings",
+      label: "Settings",
+      action: () => setShowSettings(true),
+    },
+    {
+      id: "model-settings",
+      label: "AI Settings",
+      action: () => setShowModelSettings(true),
+    },
+    {
+      id: "export",
+      label: "Export Conversation",
+      action: () => setShowExportMenu(true),
+    },
+    {
+      id: "jump",
+      label: "Jump to Message",
+      action: () => setShowJumpToMessage(true),
+    },
+    {
+      id: "theme",
+      label: "Toggle Theme",
+      action: () => document.documentElement.classList.toggle("dark"),
+    },
+  ];
+
+  // Effects
   useEffect(() => {
     loadConversations();
   }, [loadConversations]);
@@ -114,18 +319,29 @@ export function ChatPage() {
     }
   }, [currentConversation, messages.length]);
 
+  // Handlers
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
-    
     await sendMessage(input);
     setInput("");
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSubmit(e);
+    }
+    // Search navigation
+    if (searchQuery && matches.length > 0) {
+      if (e.key === "Enter" && e.shiftKey) {
+        e.preventDefault();
+        setHighlightedMessageIndex(matches[currentMatch]);
+        messageRefs.current[matches[currentMatch]]?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }
     }
   };
 
@@ -135,7 +351,17 @@ export function ChatPage() {
     inputRef.current?.focus();
   };
 
-  const displayName = user?.email?.split('@')[0] || 'User';
+  const handleJumpToMessage = (index: number) => {
+    setHighlightedMessageIndex(index);
+    messageRefs.current[index]?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+    // Clear highlight after 2 seconds
+    setTimeout(() => setHighlightedMessageIndex(null), 2000);
+  };
+
+  const displayName = user?.email?.split("@")[0] || "User";
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -154,16 +380,24 @@ export function ChatPage() {
               <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
             </div>
           </div>
-          
-          <NewChatButton onClick={handleNewChat} />
+
+          <button
+            onClick={handleNewChat}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 font-medium rounded-md transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            <span>New Chat</span>
+          </button>
         </div>
-        
+
         {/* Conversations */}
         <div className="flex-1 overflow-y-auto p-2">
           <div className="px-2 py-1 text-xs font-medium text-muted-foreground uppercase tracking-wider">
             Conversations
           </div>
-          
+
           {conversations.length === 0 ? (
             <div className="text-center py-8 px-4">
               <p className="text-muted-foreground text-sm">No conversations</p>
@@ -206,24 +440,98 @@ export function ChatPage() {
 
       {/* Main chat area */}
       <main className="flex-1 flex flex-col">
-        {/* Mobile header */}
-        <header className="md:hidden flex items-center justify-between px-4 py-3 border-b border-border bg-card">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-md bg-secondary flex items-center justify-center">
-              <svg className="w-4 h-4 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+        {/* Header */}
+        <header className="px-4 py-3 border-b border-border bg-card flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setShowModelSelector(true)}
+              className="flex items-center gap-2 px-3 py-1.5 bg-secondary rounded-md hover:bg-secondary/80 transition-colors"
+            >
+              <span className="text-sm font-medium">{currentModel || "Select Model"}</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
+            </button>
+
+            {/* Search */}
+            <div className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search messages..."
+                className="w-48 px-3 py-1.5 bg-background border border-input rounded-md text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+              {matches.length > 0 && (
+                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+                  {currentMatch + 1}/{matches.length}
+                </span>
+              )}
             </div>
-            <span className="font-semibold text-foreground">Synthesis</span>
           </div>
-          <button
-            onClick={handleNewChat}
-            className="p-2 bg-secondary text-muted-foreground hover:text-foreground rounded-md transition-colors"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-          </button>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowSystemPrompt(true)}
+              className="p-2 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-md transition-colors"
+              title="System Prompt"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+              </svg>
+            </button>
+
+            <button
+              onClick={() => setShowModelSettings(true)}
+              className="p-2 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-md transition-colors"
+              title="AI Settings"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </button>
+
+            <ThemeToggle />
+
+            <div className="relative">
+              <button
+                onClick={() => setShowExportMenu(!showExportMenu)}
+                className="p-2 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-md transition-colors"
+                title="Export"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+              </button>
+              {currentConversation && showExportMenu && (
+                <ExportMenu
+                  conversation={currentConversation}
+                  onClose={() => setShowExportMenu(false)}
+                />
+              )}
+            </div>
+
+            <button
+              onClick={() => setShowSettings(true)}
+              className="p-2 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-md transition-colors"
+              title="Settings"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+
+            <button
+              onClick={openCommandPalette}
+              className="p-2 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-md transition-colors"
+              title="Command Palette (Cmd+K)"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </button>
+          </div>
         </header>
 
         {/* Messages container */}
@@ -235,21 +543,21 @@ export function ChatPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
               </div>
-              
+
               <h3 className="text-lg font-semibold text-foreground mb-2">
                 Start a conversation
               </h3>
               <p className="text-muted-foreground text-sm max-w-md">
                 Send a message to begin chatting with AI.
               </p>
-              
+
               {/* Quick prompts */}
               <div className="mt-6 grid grid-cols-2 gap-2 max-w-md w-full">
                 {[
                   "Help me write code",
                   "Explain a concept",
                   "Review my code",
-                  "Brainstorm ideas"
+                  "Brainstorm ideas",
                 ].map((prompt, i) => (
                   <button
                     key={i}
@@ -263,14 +571,22 @@ export function ChatPage() {
             </div>
           ) : (
             <div className="space-y-4 max-w-3xl mx-auto">
-              {messages.map((msg) => (
-                <MessageBubble key={msg.id} message={msg} />
+              {messages.map((msg, index) => (
+                <div
+                  key={msg.id}
+                  ref={(el) => (messageRefs.current[index] = el)}
+                >
+                  <MessageBubble
+                    message={msg}
+                    isHighlighted={highlightedMessageIndex === index}
+                  />
+                </div>
               ))}
             </div>
           )}
-          
+
           {isLoading && <TypingIndicator />}
-          
+
           {error && (
             <div className="max-w-3xl mx-auto">
               <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-md text-destructive text-sm">
@@ -278,7 +594,7 @@ export function ChatPage() {
               </div>
             </div>
           )}
-          
+
           <div ref={messagesEndRef} />
         </div>
 
@@ -287,9 +603,7 @@ export function ChatPage() {
           <form onSubmit={handleSubmit} className="max-w-3xl mx-auto">
             <div className="relative flex items-end gap-2">
               <textarea
-                ref={(el) => {
-                  if (el) inputRef.current = el;
-                }}
+                ref={inputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
@@ -298,7 +612,7 @@ export function ChatPage() {
                 rows={1}
                 disabled={isLoading}
               />
-              
+
               <button
                 type="submit"
                 disabled={!input.trim() || isLoading}
@@ -321,12 +635,56 @@ export function ChatPage() {
               </button>
             </div>
           </form>
-          
+
           <p className="text-center text-xs text-muted-foreground mt-3">
             AI can make mistakes. Consider checking important information.
           </p>
         </div>
       </main>
+
+      {/* Modals & Panels */}
+      <CommandPalette
+        isOpen={isCommandPaletteOpen}
+        onClose={closeCommandPalette}
+        items={commandItems.map((item) => ({
+          ...item,
+          icon: (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          ),
+        }))}
+      />
+
+      <SettingsPanel isOpen={showSettings} onClose={() => setShowSettings(false)} />
+
+      <ModelSettings
+        isOpen={showModelSettings}
+        onClose={() => setShowModelSettings(false)}
+        onSettingsChange={setAiSettings}
+        conversationId={currentConversation?.id}
+      />
+
+      <ModelSelector
+        currentModel={currentModel}
+        onModelChange={setCurrentModel}
+        isOpen={showModelSelector}
+        onClose={() => setShowModelSelector(false)}
+      />
+
+      <SystemPromptEditor
+        initialValue=""
+        onSave={(prompt) => console.log("System prompt:", prompt)}
+        isOpen={showSystemPrompt}
+        onClose={() => setShowSystemPrompt(false)}
+      />
+
+      <JumpToMessage
+        totalMessages={messages.length}
+        onJump={handleJumpToMessage}
+        isOpen={showJumpToMessage}
+        onClose={() => setShowJumpToMessage(false)}
+      />
     </div>
   );
 }

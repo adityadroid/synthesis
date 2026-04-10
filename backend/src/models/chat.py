@@ -10,6 +10,12 @@ class SendMessageRequest(BaseModel):
     conversation_id: str | None = None
 
 
+class UpdateMessageRequest(BaseModel):
+    """Update/edit message request schema."""
+
+    content: str = Field(min_length=1)
+
+
 class MessageResponse(BaseModel):
     """Message response schema."""
 

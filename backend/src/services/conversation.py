@@ -83,6 +83,30 @@ async def add_message(
     return message
 
 
+async def get_message(
+    db: AsyncSession,
+    message_id: str,
+) -> Message | None:
+    """Get a message by ID."""
+    result = await db.execute(select(Message).where(Message.id == message_id))
+    return result.scalar_one_or_none()
+
+
+async def update_message(
+    db: AsyncSession,
+    message_id: str,
+    content: str,
+) -> Message | None:
+    """Update a message's content."""
+    result = await db.execute(select(Message).where(Message.id == message_id))
+    message = result.scalar_one_or_none()
+    if message:
+        message.content = content
+        await db.flush()
+        await db.refresh(message)
+    return message
+
+
 async def get_conversation_messages(
     db: AsyncSession,
     conversation_id: str,

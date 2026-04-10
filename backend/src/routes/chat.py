@@ -9,6 +9,7 @@ from ..db import get_db
 from ..models import MessageRole
 from ..models.chat import (
     SendMessageRequest,
+    UpdateMessageRequest,
     MessageResponse,
     ConversationResponse,
     ChatResponse,
@@ -148,6 +149,52 @@ async def get_messages(
         )
         for m in messages
     ]
+
+
+@router.patch("/messages/{message_id}")
+async def update_message(
+    message_id: str,
+    request: UpdateMessageRequest,
+    user_id: str = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Update/edit a message. Only user messages can be edited.
+    """
+    message = await conversation_service.get_message(db, message_id)
+    if not message:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Message not found",
+        )
+
+    # Verify ownership
+    conversation = await conversation_service.get_conversation(
+        db, message.conversation_id, user_id
+    )
+    if not conversation:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to edit this message",
+        )
+
+    # Only allow editing user messages
+    if message.role != MessageRole.USER:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Can only edit user messages",
+        )
+
+    # Update the message
+    updated = await conversation_service.update_message(db, message_id, request.content)
+
+    return MessageResponse(
+        id=updated.id,
+        role=updated.role,
+        content=updated.content,
+        token_count=updated.token_count,
+        created_at=updated.created_at.isoformat(),
+    )
 
 
 async def generate_stream(

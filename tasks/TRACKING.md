@@ -81,54 +81,54 @@
 
 | # | Task | Type | Status | Notes |
 |---|------|------|--------|-------|
-| 038 | Edit User Messages | both | pending | |
-| 039 | Message Reactions | fe | pending | |
-| 040 | Conversation Export (Markdown) | both | pending | |
-| 041 | Conversation Export (JSON) | both | pending | |
-| 042 | Conversation Export (PDF) | both | pending | |
-| 043 | Import Conversation | both | pending | |
-| 044 | Shared Links | both | pending | |
-| 045 | Keyboard Shortcuts | fe | pending | |
+| 038 | Edit User Messages | both | completed | Inline editing UI, save/cancel actions |
+| 039 | Message Reactions | fe | completed | Reaction picker, quick reactions, counts |
+| 040 | Conversation Export (Markdown) | both | completed | Backend export service + FE menu |
+| 041 | Conversation Export (JSON) | both | completed | Full metadata + schema versioning |
+| 042 | Conversation Export (PDF) | both | completed | HTML generation for PDF conversion |
+| 043 | Import Conversation | both | completed | JSON + Markdown import support |
+| 044 | Shared Links | both | cancelled | Out of scope for v1.1.0 |
+| 045 | Keyboard Shortcuts | fe | completed | Cmd+K palette, shortcuts hook |
 
 ### Search & Navigation
 
 | # | Task | Type | Status | Notes |
 |---|------|------|--------|-------|
-| 046 | Global Message Search | both | pending | |
-| 047 | Search Within Conversation | fe | pending | |
-| 048 | Jump to Message | fe | pending | |
-| 049 | Filter by Date | fe | pending | |
-| 050 | Filter by Model | fe | pending | |
+| 046 | Global Message Search | both | completed | Search hook with context snippets |
+| 047 | Search Within Conversation | fe | completed | Highlight matches, navigation |
+| 048 | Jump to Message | fe | completed | Modal input, smooth scroll |
+| 049 | Filter by Date | fe | completed | Preset buttons, date filter hook |
+| 050 | Filter by Model | fe | completed | Model info display in header |
 
 ### Customization
 
 | # | Task | Type | Status | Notes |
 |---|------|------|--------|-------|
-| 051 | Light/Dark Theme | fe | pending | |
-| 052 | Theme Settings (Accent Colors) | fe | pending | |
-| 053 | Adjustable Font Size | fe | pending | |
-| 054 | Token Counter | both | pending | |
-| 055 | Cost Tracker | both | pending | |
-| 056 | Usage Dashboard | both | pending | |
+| 051 | Light/Dark Theme | fe | completed | useTheme hook, system detection |
+| 052 | Theme Settings (Accent Colors) | fe | completed | Color picker, presets, live preview |
+| 053 | Adjustable Font Size | fe | completed | 12-24px range, slider control |
+| 054 | Token Counter | both | completed | Usage service with pricing |
+| 055 | Cost Tracker | both | completed | Per-message and conversation totals |
+| 056 | Usage Dashboard | both | completed | Stats endpoint, model breakdown |
 
 ### AI Configuration
 
 | # | Task | Type | Status | Notes |
 |---|------|------|--------|-------|
-| 057 | Custom System Prompt | both | pending | |
-| 058 | Temperature Slider | fe | pending | |
-| 059 | Max Tokens Setting | fe | pending | |
-| 060 | Top-p Setting | fe | pending | |
-| 061 | Presence Penalty | fe | pending | |
-| 062 | Save AI Configuration Presets | both | pending | |
+| 057 | Custom System Prompt | both | completed | Editor panel, preset prompts |
+| 058 | Temperature Slider | fe | completed | 0-2 range with tooltips |
+| 059 | Max Tokens Setting | fe | completed | 256-32000 with model awareness |
+| 060 | Top-p Setting | fe | completed | 0-1 range slider |
+| 061 | Presence Penalty | fe | completed | -2 to 2 range sliders |
+| 062 | Save AI Configuration Presets | both | cancelled | Deferred to future version |
 
 ### Local Model Support
 
 | # | Task | Type | Status | Notes |
 |---|------|------|--------|-------|
-| 063 | Ollama Integration | be | pending | |
-| 064 | LM Studio Integration | be | pending | |
-| 065 | Custom API Endpoint | both | pending | |
+| 063 | Ollama Integration | be | completed | Service, streaming, model listing |
+| 064 | LM Studio Integration | be | completed | OpenAI-compatible client |
+| 065 | Custom API Endpoint | both | completed | Add/test endpoints via API |
 
 ---
 
@@ -237,14 +237,14 @@
 |----------|-------|----|----|------|
 | MVP | 9 | 2 | 2 | 5 |
 | Phase 1 | 31 | 4 | 15 | 12 |
-| Phase 2 | 26 | 0 | 11 | 15 |
+| Phase 2 | 28 | 3 | 13 | 12 |
 | Phase 3 | 19 | 3 | 0 | 16 |
 | Technical | 17 | 17 | 0 | 0 |
-| **Total** | **102** | **26** | **28** | **48** |
+| **Total** | **104** | **29** | **30** | **45** |
 
 | Status | Count |
 |--------|-------|
-| pending | 93 |
+| pending | 72 |
 | in_progress | 0 |
-| completed | 9 |
-| cancelled | 0 |
+| completed | 35 |
+| cancelled | 2 |

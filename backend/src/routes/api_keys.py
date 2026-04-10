@@ -4,6 +4,7 @@ import json
 import uuid
 from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, status, Query
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, desc
 
@@ -256,10 +257,3 @@ async def delete_api_key(
 async def list_scopes():
     """List all available API key scopes."""
     return [scope.value for scope in APIKeyScope]
-
-
-# Need to import BaseModel at top, using Pydantic v2 style
-from pydantic import BaseModel
-
-APIKeyResponse.model_rebuild()
-APIKeyCreatedResponse.model_rebuild()

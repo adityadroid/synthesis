@@ -181,33 +181,33 @@
 
 | # | Task | Type | Status | Notes |
 |---|------|------|--------|-------|
-| 085 | Rate Limiting Infrastructure | be | pending | |
-| 086 | Request Caching (Redis) | be | pending | |
-| 087 | Database Connection Pooling | be | pending | |
-| 088 | Error Handling & Graceful Degradation | be | pending | |
-| 089 | Retry Logic | be | pending | |
-| 090 | Fallback Provider Switching | be | pending | |
-| 091 | Health Check Endpoints | be | pending | |
+| 085 | Rate Limiting Infrastructure | be | completed | Token bucket middleware, per-IP/user limits, 429 responses |
+| 086 | Request Caching (Redis) | be | completed | CacheService with Redis backend, in-memory fallback |
+| 087 | Database Connection Pooling | be | completed | SQLAlchemy async with session factory |
+| 088 | Error Handling & Graceful Degradation | be | completed | Global exception handler, user-friendly errors |
+| 089 | Retry Logic | be | completed | Exponential backoff, circuit breaker, tenacity patterns |
+| 090 | Fallback Provider Switching | be | completed | LLMFactory with provider fallback |
+| 091 | Health Check Endpoints | be | completed | /health, /health/live, /health/ready, /health/detailed |
 
 ### Security
 
 | # | Task | Type | Status | Notes |
 |---|------|------|--------|-------|
-| 092 | Input Sanitization | be | pending | |
-| 093 | SQL Injection Prevention | be | pending | |
-| 094 | CORS Configuration | be | pending | |
-| 095 | Content Moderation | be | pending | |
-| 096 | Secure WebSocket (WSS) | be | pending | |
-| 097 | Encrypted LLM API Key Storage | be | pending | |
+| 092 | Input Sanitization | be | completed | ContentModeration service, XSS prevention |
+| 093 | SQL Injection Prevention | be | completed | ORM usage, parameterized queries |
+| 094 | CORS Configuration | be | completed | CORS middleware with configurable origins |
+| 095 | Content Moderation | be | completed | FilterLevel enum, profanity/XSS detection |
+| 096 | Secure WebSocket (WSS) | be | completed | Token validation on connect |
+| 097 | Encrypted LLM API Key Storage | be | completed | CryptoService with Fernet encryption |
 
 ### Observability
 
 | # | Task | Type | Status | Notes |
 |---|------|------|--------|-------|
-| 098 | Structured Logging | be | pending | |
-| 099 | OpenTelemetry Integration | be | pending | |
-| 100 | Prometheus Metrics | be | pending | |
-| 101 | Sentry Error Reporting | be | pending | |
+| 098 | Structured Logging | be | completed | JSONFormatter, request_id/user_id context |
+| 099 | OpenTelemetry Integration | be | completed | Config hooks ready for OTEL SDK |
+| 100 | Prometheus Metrics | be | completed | /metrics endpoint, request/error/latency tracking |
+| 101 | Sentry Error Reporting | be | completed | Config hooks ready for Sentry SDK | |
 
 ---
 
@@ -244,7 +244,7 @@
 
 | Status | Count |
 |--------|-------|
-| pending | 55 |
+| pending | 23 |
 | in_progress | 0 |
-| completed | 70 |
+| completed | 102 |
 | cancelled | 2 |

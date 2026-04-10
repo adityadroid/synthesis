@@ -3,24 +3,21 @@ import { useAuth } from "../hooks/useAuth";
 import { useChat } from "../hooks/useChat";
 import { Message } from "../api/client";
 
-function MessageBubble({ message, isNew }: { message: Message; isNew: boolean }) {
+function MessageBubble({ message }: { message: Message; isNew?: boolean }) {
   const isUser = message.role === "user";
   
   return (
-    <div 
-      className={`flex ${isUser ? "justify-end" : "justify-start"} mb-4 animate-fade-in-up ${isNew ? 'animate-pulse' : ''}`}
-      style={{ animationDelay: isNew ? '0ms' : '0ms' }}
-    >
+    <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div
-        className={`max-w-[70%] px-5 py-3 rounded-2xl transition-all duration-300 ${
+        className={`max-w-[80%] px-4 py-3 rounded-lg ${
           isUser
-            ? "bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40"
-            : "glass-card text-zinc-100 border border-zinc-800/50 hover:border-zinc-700/50"
+            ? "bg-primary text-primary-foreground"
+            : "bg-secondary text-secondary-foreground"
         }`}
       >
-        <p className="whitespace-pre-wrap text-[15px] leading-relaxed">{message.content}</p>
-        <div className={`flex items-center gap-2 mt-2 ${isUser ? "justify-end" : ""}`}>
-          <span className={`text-xs ${isUser ? "text-white/50" : "text-zinc-500"}`}>
+        <p className="whitespace-pre-wrap text-sm">{message.content}</p>
+        <div className={`flex items-center gap-2 mt-1 ${isUser ? "justify-end" : ""}`}>
+          <span className={`text-xs ${isUser ? "text-primary-foreground/50" : "text-muted-foreground"}`}>
             {new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </span>
         </div>
@@ -31,15 +28,15 @@ function MessageBubble({ message, isNew }: { message: Message; isNew: boolean })
 
 function TypingIndicator() {
   return (
-    <div className="flex justify-start mb-4">
-      <div className="glass-card px-5 py-3 rounded-2xl border border-zinc-800/50">
+    <div className="flex justify-start">
+      <div className="bg-secondary px-4 py-3 rounded-lg border border-border">
         <div className="flex items-center gap-2">
           <div className="flex gap-1">
-            <div className="w-2 h-2 bg-zinc-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-            <div className="w-2 h-2 bg-zinc-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-            <div className="w-2 h-2 bg-zinc-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+            <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+            <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+            <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
           </div>
-          <span className="text-zinc-500 text-xs ml-2">Thinking...</span>
+          <span className="text-xs text-muted-foreground ml-2">Thinking...</span>
         </div>
       </div>
     </div>
@@ -58,34 +55,15 @@ function ConversationItem({
   return (
     <button
       onClick={onClick}
-      className={`w-full text-left px-4 py-3 rounded-xl text-sm transition-all duration-200 group ${
+      className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
         isActive
-          ? "bg-zinc-800/80 text-white border border-zinc-700/50"
-          : "text-zinc-400 hover:bg-zinc-800/40 hover:text-zinc-300 border border-transparent"
+          ? "bg-secondary text-foreground"
+          : "text-muted-foreground hover:bg-secondary hover:text-foreground"
       }`}
     >
-      <div className="flex items-start gap-3">
-        <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors ${
-          isActive 
-            ? "bg-indigo-500/20 text-indigo-400" 
-            : "bg-zinc-800/50 text-zinc-500 group-hover:text-zinc-400"
-        }`}>
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-          </svg>
-        </div>
-        <div className="flex-1 min-w-0">
-          <span className="truncate block font-medium">
-            {conversation.title || "New Chat"}
-          </span>
-          <span className="text-xs text-zinc-600 group-hover:text-zinc-500">
-            {new Date(conversation.created_at).toLocaleDateString('en-US', { 
-              month: 'short', 
-              day: 'numeric'
-            })}
-          </span>
-        </div>
-      </div>
+      <span className="truncate block">
+        {conversation.title || "New Chat"}
+      </span>
     </button>
   );
 }
@@ -94,7 +72,7 @@ function NewChatButton({ onClick }: { onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white font-medium rounded-xl transition-all duration-200 shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 hover:scale-[1.01] active:scale-[0.99]"
+      className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 font-medium rounded-md transition-colors"
     >
       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -119,10 +97,8 @@ export function ChatPage() {
   } = useChat();
   
   const [input, setInput] = useState("");
-  const [isInputFocused, setIsInputFocused] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const prevMessagesLength = useRef(messages.length);
 
   useEffect(() => {
     loadConversations();
@@ -133,7 +109,6 @@ export function ChatPage() {
   }, [messages]);
 
   useEffect(() => {
-    // Focus input when starting a new conversation
     if (messages.length === 0 && currentConversation) {
       inputRef.current?.focus();
     }
@@ -161,48 +136,37 @@ export function ChatPage() {
   };
 
   const displayName = user?.email?.split('@')[0] || 'User';
-  const isNewMessage = messages.length > prevMessagesLength.current;
-  
-  useEffect(() => {
-    prevMessagesLength.current = messages.length;
-  }, [messages.length]);
 
   return (
-    <div className="flex h-screen bg-zinc-950 overflow-hidden">
+    <div className="flex min-h-screen bg-background">
       {/* Sidebar */}
-      <aside className="w-72 bg-zinc-900/40 border-r border-zinc-800/50 flex flex-col backdrop-blur-sm hidden md:flex">
+      <aside className="w-64 bg-card border-r border-border flex flex-col">
         {/* Header */}
-        <div className="p-5 border-b border-zinc-800/30">
+        <div className="p-4 border-b border-border">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-8 h-8 rounded-md bg-secondary flex items-center justify-center">
+              <svg className="w-4 h-4 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
             <div className="flex-1 min-w-0">
-              <h2 className="text-lg font-bold text-white">Synthesis</h2>
-              <p className="text-xs text-zinc-500 truncate">{user?.email}</p>
+              <h2 className="text-sm font-semibold text-foreground">Synthesis</h2>
+              <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
             </div>
           </div>
           
-          {/* New Chat Button */}
           <NewChatButton onClick={handleNewChat} />
         </div>
         
         {/* Conversations */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-2 no-scrollbar">
-          <div className="px-3 py-2 text-xs font-medium text-zinc-500 uppercase tracking-wider">
+        <div className="flex-1 overflow-y-auto p-2">
+          <div className="px-2 py-1 text-xs font-medium text-muted-foreground uppercase tracking-wider">
             Conversations
           </div>
           
           {conversations.length === 0 ? (
             <div className="text-center py-8 px-4">
-              <div className="w-12 h-12 rounded-xl bg-zinc-800/50 flex items-center justify-center mx-auto mb-3">
-                <svg className="w-6 h-6 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                </svg>
-              </div>
-              <p className="text-zinc-600 text-sm">No conversations yet</p>
+              <p className="text-muted-foreground text-sm">No conversations</p>
             </div>
           ) : (
             conversations.map((conv) => (
@@ -217,23 +181,23 @@ export function ChatPage() {
         </div>
 
         {/* User section */}
-        <div className="p-4 border-t border-zinc-800/30">
+        <div className="p-3 border-t border-border">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-zinc-700 to-zinc-600 flex items-center justify-center flex-shrink-0">
-                <span className="text-xs font-semibold text-zinc-300">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="w-7 h-7 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
+                <span className="text-xs font-medium text-foreground">
                   {displayName.charAt(0).toUpperCase()}
                 </span>
               </div>
-              <span className="text-sm text-zinc-400 truncate">{displayName}</span>
+              <span className="text-sm text-muted-foreground truncate">{displayName}</span>
             </div>
             <button
               onClick={logout}
-              className="p-1.5 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all duration-200"
+              className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-md transition-colors"
               title="Logout"
             >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
             </button>
           </div>
@@ -241,23 +205,20 @@ export function ChatPage() {
       </aside>
 
       {/* Main chat area */}
-      <main className="flex-1 flex flex-col bg-zinc-950 relative">
-        {/* Ambient background */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-zinc-900 via-zinc-950 to-zinc-950 pointer-events-none" />
-        
+      <main className="flex-1 flex flex-col">
         {/* Mobile header */}
-        <header className="md:hidden flex items-center justify-between px-4 py-3 border-b border-zinc-800/30 bg-zinc-900/40 backdrop-blur-sm">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <header className="md:hidden flex items-center justify-between px-4 py-3 border-b border-border bg-card">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-md bg-secondary flex items-center justify-center">
+              <svg className="w-4 h-4 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
-            <span className="font-bold text-white">Synthesis</span>
+            <span className="font-semibold text-foreground">Synthesis</span>
           </div>
           <button
             onClick={handleNewChat}
-            className="p-2 bg-zinc-800/60 hover:bg-zinc-700 text-zinc-400 rounded-lg transition-colors"
+            className="p-2 bg-secondary text-muted-foreground hover:text-foreground rounded-md transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -266,27 +227,26 @@ export function ChatPage() {
         </header>
 
         {/* Messages container */}
-        <div className="flex-1 overflow-y-auto p-6 relative">
+        <div className="flex-1 overflow-y-auto p-4">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center px-4">
-              {/* Empty state icon */}
-              <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-zinc-800/50 to-zinc-900/50 border border-zinc-700/30 flex items-center justify-center mb-6 animate-fade-in-scale">
-                <svg className="w-10 h-10 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-16 h-16 rounded-lg bg-secondary flex items-center justify-center mb-4">
+                <svg className="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
               </div>
               
-              <h3 className="text-xl font-medium text-white mb-2 animate-fade-in-up delay-100">
+              <h3 className="text-lg font-semibold text-foreground mb-2">
                 Start a conversation
               </h3>
-              <p className="text-zinc-500 text-sm max-w-sm animate-fade-in-up delay-200">
-                Send a message below to begin chatting with AI. I can help you with coding, writing, analysis, and more.
+              <p className="text-muted-foreground text-sm max-w-md">
+                Send a message to begin chatting with AI.
               </p>
               
               {/* Quick prompts */}
-              <div className="mt-8 grid gap-3 animate-fade-in-up delay-300 max-w-md w-full">
+              <div className="mt-6 grid grid-cols-2 gap-2 max-w-md w-full">
                 {[
-                  "Help me write a function",
+                  "Help me write code",
                   "Explain a concept",
                   "Review my code",
                   "Brainstorm ideas"
@@ -294,21 +254,17 @@ export function ChatPage() {
                   <button
                     key={i}
                     onClick={() => setInput(prompt)}
-                    className="p-4 bg-zinc-900/60 hover:bg-zinc-800/60 border border-zinc-800/50 hover:border-zinc-700/50 rounded-xl text-left transition-all duration-200 group"
+                    className="p-3 bg-secondary text-muted-foreground hover:text-foreground text-sm rounded-md transition-colors text-left"
                   >
-                    <span className="text-zinc-400 group-hover:text-zinc-300 text-sm">{prompt}</span>
+                    {prompt}
                   </button>
                 ))}
               </div>
             </div>
           ) : (
-            <div className="max-w-4xl mx-auto">
-              {messages.map((msg, index) => (
-                <MessageBubble 
-                  key={msg.id} 
-                  message={msg} 
-                  isNew={index === messages.length - 1 && isNewMessage}
-                />
+            <div className="space-y-4 max-w-3xl mx-auto">
+              {messages.map((msg) => (
+                <MessageBubble key={msg.id} message={msg} />
               ))}
             </div>
           )}
@@ -316,12 +272,9 @@ export function ChatPage() {
           {isLoading && <TypingIndicator />}
           
           {error && (
-            <div className="max-w-4xl mx-auto">
-              <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm flex items-start gap-3 animate-fade-in">
-                <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <p>{error}</p>
+            <div className="max-w-3xl mx-auto">
+              <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-md text-destructive text-sm">
+                {error}
               </div>
             </div>
           )}
@@ -330,60 +283,48 @@ export function ChatPage() {
         </div>
 
         {/* Input area */}
-        <div className="p-4 border-t border-zinc-800/30 relative">
-          <div className="max-w-4xl mx-auto">
-            <form 
-              onSubmit={handleSubmit} 
-              className={`relative transition-all duration-200 ${isInputFocused ? 'scale-[1.01]' : ''}`}
-            >
-              <div className="relative flex items-end gap-3">
-                {/* Input field */}
-                <div className="flex-1 relative">
-                  <textarea
-                    ref={(el) => {
-                      // Maintain ref for focus
-                      if (el) inputRef.current = el;
-                    }}
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onFocus={() => setIsInputFocused(true)}
-                    onBlur={() => setIsInputFocused(false)}
-                    onKeyDown={handleKeyDown}
-                    placeholder="Type your message..."
-                    className="w-full px-5 py-3.5 bg-zinc-900/80 text-white text-sm rounded-xl border border-zinc-800/50 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none transition-all duration-200 placeholder-zinc-500 resize-none min-h-[52px] max-h-48 scrollbar-hide"
-                    rows={1}
-                    disabled={isLoading}
-                  />
-                  
-                  {/* Send button */}
-                  <button
-                    type="submit"
-                    disabled={!input.trim() || isLoading}
-                    className={`absolute right-2 bottom-2 p-2 rounded-xl transition-all duration-200 ${
-                      input.trim() && !isLoading
-                        ? "bg-gradient-to-r from-indigo-500 to-violet-600 text-white shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-105 active:scale-95"
-                        : "bg-zinc-800 text-zinc-500 cursor-not-allowed"
-                    }`}
-                  >
-                    {isLoading ? (
-                      <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                      </svg>
-                    ) : (
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                      </svg>
-                    )}
-                  </button>
-                </div>
-              </div>
-            </form>
-            
-            <p className="text-center text-xs text-zinc-600 mt-3">
-              AI can make mistakes. Consider checking important information.
-            </p>
-          </div>
+        <div className="px-4 py-4 border-t border-border">
+          <form onSubmit={handleSubmit} className="max-w-3xl mx-auto">
+            <div className="relative flex items-end gap-2">
+              <textarea
+                ref={(el) => {
+                  if (el) inputRef.current = el;
+                }}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Type your message..."
+                className="w-full px-4 py-3 bg-background border border-input text-foreground text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-ring resize-none min-h-[60px] max-h-40 placeholder:text-muted-foreground"
+                rows={1}
+                disabled={isLoading}
+              />
+              
+              <button
+                type="submit"
+                disabled={!input.trim() || isLoading}
+                className={`p-3 rounded-lg transition-colors ${
+                  input.trim() && !isLoading
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                    : "bg-secondary text-muted-foreground cursor-not-allowed"
+                }`}
+              >
+                {isLoading ? (
+                  <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                ) : (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                  </svg>
+                )}
+              </button>
+            </div>
+          </form>
+          
+          <p className="text-center text-xs text-muted-foreground mt-3">
+            AI can make mistakes. Consider checking important information.
+          </p>
         </div>
       </main>
     </div>

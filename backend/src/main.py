@@ -16,6 +16,7 @@ from .routes import (
     upload,
     templates,
     workspaces,
+    tools,
 )
 
 
@@ -50,6 +51,7 @@ app.include_router(usage.router, prefix="/api")
 app.include_router(upload.router, prefix="/api")
 app.include_router(templates.router, prefix="/api")
 app.include_router(workspaces.router, prefix="/api")
+app.include_router(tools.router, prefix="/api")
 
 
 @app.get("/health")

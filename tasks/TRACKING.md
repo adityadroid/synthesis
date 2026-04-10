@@ -152,8 +152,8 @@
 | 072 | Voice Input (Speech-to-Text) | fe | completed | Browser Web Speech API with useSpeechToText hook and VoiceInput component |
 | 073 | Conversation Templates | both | completed | Backend: Template model, routes with 8 built-in templates. Frontend: TemplateBrowser component |
 | 074 | Prompt Library | both | pending | |
-| 075 | Function Calling (Tool Use) | both | pending | |
-| 076 | Web Search Integration | both | pending | |
+| 075 | Function Calling (Tool Use) | both | completed | ToolRegistry, ToolDefinition, calculator, text tools, web_search |
+| 076 | Web Search Integration | both | completed | SearchService with Serper/DuckDuckGo, integrated as tool |
 
 ### Analytics & Admin
 
@@ -244,7 +244,7 @@
 
 | Status | Count |
 |--------|-------|
-| pending | 59 |
+| pending | 57 |
 | in_progress | 0 |
-| completed | 66 |
+| completed | 68 |
 | cancelled | 2 |

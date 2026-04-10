@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from typing import Tuple
-from sqlalchemy import select, and_
+from sqlalchemy import select, and_, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..models import Conversation, Message, MessageRole
@@ -136,6 +136,83 @@ async def update_conversation_title(
         await db.flush()
         await db.refresh(conversation)
     return conversation
+
+
+async def update_conversation_model(
+    db: AsyncSession,
+    conversation_id: str,
+    model: str,
+) -> Conversation | None:
+    """Update conversation's model."""
+    result = await db.execute(
+        select(Conversation).where(Conversation.id == conversation_id)
+    )
+    conversation = result.scalar_one_or_none()
+    if conversation:
+        conversation.model = model
+        conversation.updated_at = datetime.utcnow()
+        await db.flush()
+        await db.refresh(conversation)
+    return conversation
+
+
+async def delete_conversation(
+    db: AsyncSession,
+    conversation_id: str,
+    user_id: str,
+) -> bool:
+    """
+    Delete a conversation and all its messages.
+    Returns True if deleted, False if not found or not owned by user.
+    """
+    conversation = await get_conversation(db, conversation_id, user_id)
+    if not conversation:
+        return False
+
+    # Delete all messages in the conversation first
+    await db.execute(delete(Message).where(Message.conversation_id == conversation_id))
+
+    # Delete the conversation
+    await db.execute(delete(Conversation).where(Conversation.id == conversation_id))
+    await db.flush()
+    return True
+
+
+async def clear_conversation_messages(
+    db: AsyncSession,
+    conversation_id: str,
+) -> bool:
+    """Clear all messages from a conversation. Returns True if successful."""
+    result = await db.execute(
+        select(Conversation).where(Conversation.id == conversation_id)
+    )
+    conversation = result.scalar_one_or_none()
+    if not conversation:
+        return False
+
+    # Delete all messages
+    await db.execute(delete(Message).where(Message.conversation_id == conversation_id))
+    await db.flush()
+    return True
+
+
+async def search_conversations(
+    db: AsyncSession,
+    user_id: str,
+    query: str,
+) -> list[Conversation]:
+    """Search conversations by title for a specific user."""
+    result = await db.execute(
+        select(Conversation)
+        .where(
+            and_(
+                Conversation.user_id == user_id,
+                Conversation.title.ilike(f"%{query}%"),
+            )
+        )
+        .order_by(Conversation.updated_at.desc())
+    )
+    return list(result.scalars().all())
 
 
 def to_conversation_response(conversation: Conversation) -> ConversationResponse:

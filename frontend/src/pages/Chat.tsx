@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useChat } from "../hooks/useChat";
 import { useTheme } from "../hooks/useTheme";
@@ -8,27 +8,36 @@ import { useMessageReactions, ReactionPicker } from "../hooks/useMessageReaction
 import { CommandPalette } from "../components/ui/CommandPalette";
 import { ThemeToggle } from "../components/Chat/ThemeToggle";
 import { SettingsPanel } from "../components/Chat/SettingsPanel";
-import { ModelSettings, AISettings } from "../components/Chat/ModelSettings";
+import { ModelSettings } from "../components/Chat/ModelSettings";
 import { ModelSelector } from "../components/Chat/ModelSelector";
 import { SystemPromptEditor } from "../components/Chat/SystemPromptEditor";
 import { ExportMenu } from "../components/Chat/ExportMenu";
 import { JumpToMessage } from "../components/Chat/JumpToMessage";
-import { api, Message } from "../api/client";
+import { MessageContent } from "../components/Chat/MessageContent";
+import { api, Message, Conversation } from "../api/client";
 
 function MessageBubble({
   message,
   onEdit,
   isHighlighted,
+  onRetry,
+  onRegenerate,
+  isLastAssistant,
+  isRetrying,
 }: {
   message: Message;
   onEdit?: (messageId: string, content: string) => void;
   isHighlighted?: boolean;
+  onRetry?: (messageId: string) => void;
+  onRegenerate?: (messageId: string) => void;
+  isLastAssistant?: boolean;
+  isRetrying?: boolean;
 }) {
   const isUser = message.role === "user";
   const [showActions, setShowActions] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(message.content);
-  const [isSaving, setIsSaving] = useState(false);
+  const [_isSaving, setIsSaving] = useState(false);
   const { getReactions, toggleReaction } = useMessageReactions();
   const [showReactionPicker, setShowReactionPicker] = useState(false);
   const reactions = getReactions(message.id);
@@ -94,7 +103,7 @@ function MessageBubble({
           </div>
         ) : (
           <>
-            <p className="whitespace-pre-wrap text-sm">{message.content}</p>
+            <MessageContent content={message.content} />
             <div className={`flex items-center gap-2 mt-1 ${isUser ? "justify-end" : ""}`}>
               {reactions.length > 0 && (
                 <div className="flex gap-1">
@@ -131,6 +140,46 @@ function MessageBubble({
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
+              </button>
+            )}
+            {/* Retry button for failed messages */}
+            {onRetry && !isUser && (
+              <button
+                onClick={() => onRetry(message.id)}
+                className="p-1.5 bg-muted rounded hover:bg-muted/80 text-xs"
+                title="Retry"
+                disabled={isRetrying}
+              >
+                {isRetrying ? (
+                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                ) : (
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                )}
+              </button>
+            )}
+            {/* Regenerate button for last assistant message */}
+            {onRegenerate && !isUser && isLastAssistant && (
+              <button
+                onClick={() => onRegenerate(message.id)}
+                className="p-1.5 bg-muted rounded hover:bg-muted/80 text-xs"
+                title="Regenerate"
+                disabled={isRetrying}
+              >
+                {isRetrying ? (
+                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                ) : (
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                )}
               </button>
             )}
             <button
@@ -192,22 +241,150 @@ function ConversationItem({
   conversation,
   isActive,
   onClick,
+  onRename,
+  onDelete,
+  onClear,
 }: {
-  conversation: { id: string; title: string | null; created_at: string };
+  conversation: { id: string; title: string | null; created_at: string; updated_at?: string };
   isActive: boolean;
   onClick: () => void;
+  onRename: (id: string, title: string) => void;
+  onDelete: (id: string) => void;
+  onClear: (id: string) => void;
 }) {
+  const [showActions, setShowActions] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState(conversation.title || "");
+
+  const handleRename = () => {
+    if (editTitle.trim() && editTitle !== conversation.title) {
+      onRename(conversation.id, editTitle.trim());
+    }
+    setIsEditing(false);
+  };
+
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setShowMenu(true);
+  };
+
+  if (isEditing) {
+    return (
+      <div className="w-full">
+        <input
+          type="text"
+          value={editTitle}
+          onChange={(e) => setEditTitle(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleRename();
+            if (e.key === "Escape") {
+              setIsEditing(false);
+              setEditTitle(conversation.title || "");
+            }
+          }}
+          onBlur={handleRename}
+          className="w-full px-3 py-2 bg-background border border-ring text-sm text-foreground rounded-md focus:outline-none"
+          autoFocus
+        />
+      </div>
+    );
+  }
+
   return (
-    <button
-      onClick={onClick}
-      className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
+    <div
+      className={`relative w-full text-left px-3 py-2 rounded-md text-sm transition-colors group ${
         isActive
           ? "bg-secondary text-foreground"
           : "text-muted-foreground hover:bg-secondary hover:text-foreground"
       }`}
+      onClick={onClick}
+      onContextMenu={handleContextMenu}
+      onMouseEnter={() => setShowActions(true)}
+      onMouseLeave={() => {
+        setShowActions(false);
+        setShowMenu(false);
+      }}
     >
       <span className="truncate block">{conversation.title || "New Chat"}</span>
-    </button>
+
+      {/* Hover actions */}
+      {showActions && !isActive && (
+        <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsEditing(true);
+              setEditTitle(conversation.title || "");
+            }}
+            className="p-1 hover:bg-accent rounded"
+            title="Rename"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onClear(conversation.id);
+            }}
+            className="p-1 hover:bg-accent rounded"
+            title="Clear messages"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(conversation.id);
+            }}
+            className="p-1 hover:bg-destructive/20 hover:text-destructive rounded"
+            title="Delete"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+        </div>
+      )}
+
+      {/* Context menu */}
+      {showMenu && (
+        <div className="absolute left-full ml-1 top-0 z-50 bg-popover border rounded-md shadow-lg py-1 min-w-[140px]">
+          <button
+            onClick={() => {
+              setIsEditing(true);
+              setEditTitle(conversation.title || "");
+              setShowMenu(false);
+            }}
+            className="w-full px-3 py-1.5 text-left text-sm hover:bg-accent"
+          >
+            Rename
+          </button>
+          <button
+            onClick={() => {
+              onClear(conversation.id);
+              setShowMenu(false);
+            }}
+            className="w-full px-3 py-1.5 text-left text-sm hover:bg-accent"
+          >
+            Clear Messages
+          </button>
+          <button
+            onClick={() => {
+              onDelete(conversation.id);
+              setShowMenu(false);
+            }}
+            className="w-full px-3 py-1.5 text-left text-sm hover:bg-destructive/20 text-destructive"
+          >
+            Delete
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -223,8 +400,12 @@ export function ChatPage() {
     currentConversation,
     setCurrentConversation,
     createNewConversation,
+    renameConversation,
+    deleteConversation,
+    clearConversation,
+    searchConversations,
   } = useChat();
-  const { resolvedTheme } = useTheme();
+  useTheme(); // Initialize theme hook
 
   // UI state
   const [input, setInput] = useState("");
@@ -235,8 +416,13 @@ export function ChatPage() {
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [showJumpToMessage, setShowJumpToMessage] = useState(false);
   const [currentModel, setCurrentModel] = useState<string | null>(null);
-  const [aiSettings, setAiSettings] = useState<AISettings | null>(null);
   const [highlightedMessageIndex, setHighlightedMessageIndex] = useState<number | null>(null);
+  const [retryingMessageId, setRetryingMessageId] = useState<string | null>(null);
+  const [regeneratingMessageId, setRegeneratingMessageId] = useState<string | null>(null);
+  
+  // Sidebar state
+  const [conversationSearch, setConversationSearch] = useState("");
+  const [filteredConversations, setFilteredConversations] = useState<Conversation[]>([]);
 
   // Refs
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -251,7 +437,7 @@ export function ChatPage() {
     ...DEFAULT_SHORTCUTS,
     {
       key: "n",
-      modifiers: ["meta"],
+      modifiers: ["meta"] as ("meta" | "ctrl" | "alt" | "shift")[],
       description: "New conversation",
       action: () => {
         createNewConversation();
@@ -260,7 +446,7 @@ export function ChatPage() {
     },
     {
       key: "s",
-      modifiers: ["meta"],
+      modifiers: ["meta"] as ("meta" | "ctrl" | "alt" | "shift")[],
       description: "Toggle settings",
       action: () => setShowSettings((v) => !v),
     },
@@ -319,12 +505,66 @@ export function ChatPage() {
     }
   }, [currentConversation, messages.length]);
 
+  // Filter conversations based on search
+  useEffect(() => {
+    if (conversationSearch.trim()) {
+      searchConversations(conversationSearch).then(setFilteredConversations);
+    } else {
+      setFilteredConversations(conversations);
+    }
+  }, [conversationSearch, conversations, searchConversations]);
+
   // Handlers
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
     await sendMessage(input);
     setInput("");
+  };
+
+  const handleRetry = async (assistantMessageId: string) => {
+    const msgIndex = messages.findIndex((m) => m.id === assistantMessageId);
+    if (msgIndex === -1) return;
+    
+    // Find the user message before this assistant message
+    const userMsgIndex = messages.slice(0, msgIndex).reverse().findIndex((m) => m.role === "user");
+    if (userMsgIndex === -1) return;
+    
+    const userMessage = messages[msgIndex - 1 - userMsgIndex];
+    if (!userMessage) return;
+    
+    setRetryingMessageId(assistantMessageId);
+    try {
+      // Re-send the user message to get a new response
+      // Note: This adds a duplicate user message and new response
+      await sendMessage(userMessage.content);
+    } catch (error) {
+      console.error("Retry failed:", error);
+    } finally {
+      setRetryingMessageId(null);
+    }
+  };
+
+  const handleRegenerate = async (assistantMessageId: string) => {
+    const msgIndex = messages.findIndex((m) => m.id === assistantMessageId);
+    if (msgIndex === -1) return;
+    
+    // Find the user message that prompted this response
+    const userMsgIndex = messages.slice(0, msgIndex).reverse().findIndex((m) => m.role === "user");
+    if (userMsgIndex === -1) return;
+    
+    const userMessage = messages[msgIndex - 1 - userMsgIndex];
+    if (!userMessage) return;
+    
+    setRegeneratingMessageId(assistantMessageId);
+    try {
+      // Re-send the user message to regenerate the response
+      await sendMessage(userMessage.content);
+    } catch (error) {
+      console.error("Regenerate failed:", error);
+    } finally {
+      setRegeneratingMessageId(null);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -394,21 +634,49 @@ export function ChatPage() {
 
         {/* Conversations */}
         <div className="flex-1 overflow-y-auto p-2">
+          {/* Search conversations */}
+          <div className="px-2 mb-2">
+            <div className="relative">
+              <input
+                type="text"
+                value={conversationSearch}
+                onChange={(e) => setConversationSearch(e.target.value)}
+                placeholder="Search conversations..."
+                className="w-full px-3 py-1.5 bg-background border border-input rounded-md text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+              />
+              {conversationSearch && (
+                <button
+                  onClick={() => setConversationSearch("")}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
+            </div>
+          </div>
+          
           <div className="px-2 py-1 text-xs font-medium text-muted-foreground uppercase tracking-wider">
             Conversations
           </div>
 
-          {conversations.length === 0 ? (
+          {filteredConversations.length === 0 ? (
             <div className="text-center py-8 px-4">
-              <p className="text-muted-foreground text-sm">No conversations</p>
+              <p className="text-muted-foreground text-sm">
+                {conversationSearch ? "No matching conversations" : "No conversations"}
+              </p>
             </div>
           ) : (
-            conversations.map((conv) => (
+            filteredConversations.map((conv) => (
               <ConversationItem
                 key={conv.id}
                 conversation={conv}
                 isActive={currentConversation?.id === conv.id}
                 onClick={() => setCurrentConversation(conv)}
+                onRename={renameConversation}
+                onDelete={deleteConversation}
+                onClear={clearConversation}
               />
             ))
           )}
@@ -508,6 +776,7 @@ export function ChatPage() {
                 <ExportMenu
                   conversation={currentConversation}
                   onClose={() => setShowExportMenu(false)}
+                  onClear={() => clearConversation(currentConversation.id)}
                 />
               )}
             </div>
@@ -571,17 +840,24 @@ export function ChatPage() {
             </div>
           ) : (
             <div className="space-y-4 max-w-3xl mx-auto">
-              {messages.map((msg, index) => (
-                <div
-                  key={msg.id}
-                  ref={(el) => (messageRefs.current[index] = el)}
-                >
-                  <MessageBubble
-                    message={msg}
-                    isHighlighted={highlightedMessageIndex === index}
-                  />
-                </div>
-              ))}
+              {messages.map((msg, index) => {
+                const isLastAssistant = msg.role === "assistant" && index === messages.length - 1;
+                return (
+                  <div
+                    key={msg.id}
+                    ref={(el) => { messageRefs.current[index] = el; }}
+                  >
+                    <MessageBubble
+                      message={msg}
+                      isHighlighted={highlightedMessageIndex === index}
+                      onRetry={error ? handleRetry : undefined}
+                      onRegenerate={isLastAssistant && !isLoading && !error ? handleRegenerate : undefined}
+                      isLastAssistant={isLastAssistant}
+                      isRetrying={retryingMessageId === msg.id || regeneratingMessageId === msg.id}
+                    />
+                  </div>
+                );
+              })}
             </div>
           )}
 
@@ -661,7 +937,7 @@ export function ChatPage() {
       <ModelSettings
         isOpen={showModelSettings}
         onClose={() => setShowModelSettings(false)}
-        onSettingsChange={setAiSettings}
+        onSettingsChange={() => {}}
         conversationId={currentConversation?.id}
       />
 

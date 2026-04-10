@@ -13,7 +13,7 @@ interface ModelSelectorProps {
   onClose: () => void;
 }
 
-const COMMON_MODELS = [
+const COMMON_MODELS: Model[] = [
   // OpenAI
   { id: "gpt-4o", name: "GPT-4o", provider: "openai" },
   { id: "gpt-4o-mini", name: "GPT-4o Mini", provider: "openai" },

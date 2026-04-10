@@ -8,6 +8,7 @@ class SendMessageRequest(BaseModel):
 
     message: str = Field(min_length=1)
     conversation_id: str | None = None
+    model: str | None = None
 
 
 class UpdateMessageRequest(BaseModel):
@@ -24,6 +25,7 @@ class MessageResponse(BaseModel):
     content: str
     token_count: int | None
     created_at: str
+    model: str | None = None
 
     model_config = {"from_attributes": True}
 

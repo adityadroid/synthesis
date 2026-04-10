@@ -15,8 +15,6 @@ interface UseKeyboardShortcutsReturn {
   shortcuts: KeyboardShortcut[];
 }
 
-const SHORTCUTS_STORAGE_KEY = "synthesis-keyboard-shortcuts";
-
 export function useKeyboardShortcuts(
   shortcuts: KeyboardShortcut[]
 ): UseKeyboardShortcutsReturn {

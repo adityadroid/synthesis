@@ -5,12 +5,18 @@ interface UseChatReturn {
   messages: Message[];
   isLoading: boolean;
   error: string | null;
-  sendMessage: (content: string) => Promise<void>;
+  sendMessage: (content: string, model?: string) => Promise<void>;
   conversations: Conversation[];
   loadConversations: () => Promise<void>;
   currentConversation: Conversation | null;
   setCurrentConversation: (conv: Conversation | null) => void;
   createNewConversation: () => void;
+  renameConversation: (conversationId: string, newTitle: string) => Promise<void>;
+  deleteConversation: (conversationId: string) => Promise<void>;
+  clearConversation: (conversationId: string) => Promise<void>;
+  searchConversations: (query: string) => Promise<Conversation[]>;
+  currentModel: string | null;
+  setCurrentModel: (model: string | null) => void;
 }
 
 export function useChat(): UseChatReturn {
@@ -19,6 +25,7 @@ export function useChat(): UseChatReturn {
   const [error, setError] = useState<string | null>(null);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null);
+  const [currentModel, setCurrentModel] = useState<string | null>(null);
 
   const createNewConversation = useCallback(() => {
     setCurrentConversation(null);
@@ -47,11 +54,14 @@ export function useChat(): UseChatReturn {
     }
   }, []);
 
-  const sendMessage = useCallback(async (content: string) => {
+  const sendMessage = useCallback(async (content: string, model?: string) => {
     if (!content.trim()) return;
     
     setIsLoading(true);
     setError(null);
+
+    // Use provided model or fall back to currentModel (from conversation)
+    const selectedModel = model || currentModel || currentConversation?.model || undefined;
 
     // Optimistic add user message
     const userMessage: Message = {
@@ -60,16 +70,22 @@ export function useChat(): UseChatReturn {
       content,
       token_count: null,
       created_at: new Date().toISOString(),
+      model: selectedModel || null,
     };
     setMessages((prev) => [...prev, userMessage]);
 
     try {
-      const response = await api.sendMessage(content, currentConversation?.id);
+      const response = await api.sendMessage(content, currentConversation?.id, selectedModel);
       
       // Update conversation if it's new
       if (response.conversation && !currentConversation) {
         setCurrentConversation(response.conversation);
         await loadConversations();
+      }
+
+      // Update model if set
+      if (response.conversation?.model) {
+        setCurrentModel(response.conversation.model);
       }
 
       // Add assistant message
@@ -81,12 +97,63 @@ export function useChat(): UseChatReturn {
     } finally {
       setIsLoading(false);
     }
-  }, [currentConversation, loadConversations]);
+  }, [currentConversation, currentModel, loadConversations]);
 
-  // Load messages when conversation changes
+  const renameConversation = useCallback(async (conversationId: string, newTitle: string) => {
+    try {
+      const updated = await api.renameConversation(conversationId, newTitle);
+      setConversations((prev) =>
+        prev.map((c) => (c.id === conversationId ? updated : c))
+      );
+      if (currentConversation?.id === conversationId) {
+        setCurrentConversation(updated);
+      }
+    } catch (err) {
+      console.error("Failed to rename conversation:", err);
+      setError("Failed to rename conversation");
+    }
+  }, [currentConversation]);
+
+  const deleteConversation = useCallback(async (conversationId: string) => {
+    try {
+      await api.deleteConversation(conversationId);
+      setConversations((prev) => prev.filter((c) => c.id !== conversationId));
+      if (currentConversation?.id === conversationId) {
+        setCurrentConversation(null);
+        setMessages([]);
+      }
+    } catch (err) {
+      console.error("Failed to delete conversation:", err);
+      setError("Failed to delete conversation");
+    }
+  }, [currentConversation]);
+
+  const clearConversation = useCallback(async (conversationId: string) => {
+    try {
+      await api.clearConversation(conversationId);
+      if (currentConversation?.id === conversationId) {
+        setMessages([]);
+      }
+    } catch (err) {
+      console.error("Failed to clear conversation:", err);
+      setError("Failed to clear messages");
+    }
+  }, [currentConversation]);
+
+  const searchConversations = useCallback(async (query: string): Promise<Conversation[]> => {
+    try {
+      return await api.searchConversations(query);
+    } catch (err) {
+      console.error("Failed to search conversations:", err);
+      return [];
+    }
+  }, []);
+
+  // Load messages and model when conversation changes
   useState(() => {
     if (currentConversation) {
       loadMessages(currentConversation.id);
+      setCurrentModel(currentConversation.model);
     }
   });
 
@@ -100,5 +167,11 @@ export function useChat(): UseChatReturn {
     currentConversation,
     setCurrentConversation,
     createNewConversation,
+    renameConversation,
+    deleteConversation,
+    clearConversation,
+    searchConversations,
+    currentModel,
+    setCurrentModel,
   };
 }

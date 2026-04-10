@@ -1,7 +1,7 @@
 """Chat routes for messaging and streaming."""
 
 import asyncio
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -50,6 +50,12 @@ async def send_message(
             db, user_id
         )
 
+    # Save model to conversation if provided
+    if request.model:
+        await conversation_service.update_conversation_model(
+            db, conversation.id, request.model
+        )
+
     # Add user message to conversation
     user_message = await conversation_service.add_message(
         db, conversation.id, MessageRole.USER, request.message
@@ -82,6 +88,7 @@ async def send_message(
             content=assistant_message.content,
             token_count=assistant_message.token_count,
             created_at=assistant_message.created_at.isoformat(),
+            model=assistant_message.model,
         ),
         conversation=ConversationResponse(
             id=conversation.id,
@@ -146,6 +153,7 @@ async def get_messages(
             content=m.content,
             token_count=m.token_count,
             created_at=m.created_at.isoformat(),
+            model=m.model,
         )
         for m in messages
     ]
@@ -194,6 +202,7 @@ async def update_message(
         content=updated.content,
         token_count=updated.token_count,
         created_at=updated.created_at.isoformat(),
+        model=updated.model,
     )
 
 
@@ -245,6 +254,12 @@ async def stream_message(
             detail="Conversation not found",
         )
 
+    # Save model to conversation if provided
+    if request.model:
+        await conversation_service.update_conversation_model(
+            db, conversation_id, request.model
+        )
+
     # Add user message
     await conversation_service.add_message(
         db, conversation_id, MessageRole.USER, request.message
@@ -259,3 +274,117 @@ async def stream_message(
             "Connection": "keep-alive",
         },
     )
+
+
+@router.patch("/conversations/{conversation_id}")
+async def rename_conversation(
+    conversation_id: str,
+    request: dict,
+    user_id: str = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Rename a conversation (update title).
+    """
+    new_title = request.get("title")
+    if not new_title:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Title is required",
+        )
+
+    conversation = await conversation_service.get_conversation(
+        db, conversation_id, user_id
+    )
+    if not conversation:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Conversation not found",
+        )
+
+    updated = await conversation_service.update_conversation_title(
+        db, conversation_id, new_title
+    )
+
+    return ConversationResponse(
+        id=updated.id,
+        title=updated.title,
+        model=updated.model,
+        created_at=updated.created_at.isoformat(),
+        updated_at=updated.updated_at.isoformat(),
+    )
+
+
+@router.delete("/conversations/{conversation_id}")
+async def delete_conversation(
+    conversation_id: str,
+    user_id: str = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Delete a conversation and all its messages.
+    """
+    deleted = await conversation_service.delete_conversation(
+        db, conversation_id, user_id
+    )
+    if not deleted:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Conversation not found",
+        )
+
+    return {"message": "Conversation deleted successfully"}
+
+
+@router.delete("/conversations/{conversation_id}/messages")
+async def clear_conversation(
+    conversation_id: str,
+    user_id: str = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Clear all messages from a conversation.
+    """
+    # First verify the conversation exists and belongs to the user
+    conversation = await conversation_service.get_conversation(
+        db, conversation_id, user_id
+    )
+    if not conversation:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Conversation not found",
+        )
+
+    cleared = await conversation_service.clear_conversation_messages(
+        db, conversation_id
+    )
+    if not cleared:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to clear messages",
+        )
+
+    return {"message": "Messages cleared successfully"}
+
+
+@router.get("/conversations/search")
+async def search_conversations(
+    q: str = Query(..., min_length=1, description="Search query"),
+    user_id: str = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Search conversations by title.
+    """
+    conversations = await conversation_service.search_conversations(db, user_id, q)
+
+    return [
+        ConversationResponse(
+            id=c.id,
+            title=c.title,
+            model=c.model,
+            created_at=c.created_at.isoformat(),
+            updated_at=c.updated_at.isoformat(),
+        )
+        for c in conversations
+    ]

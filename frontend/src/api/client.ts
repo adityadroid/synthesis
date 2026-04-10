@@ -23,6 +23,7 @@ export interface Message {
   content: string;
   token_count: number | null;
   created_at: string;
+  model: string | null;
 }
 
 export interface Conversation {
@@ -131,11 +132,40 @@ class ApiClient {
     return this.request<User>("/users/me");
   }
 
+  // Profile endpoints
+  async getProfile(): Promise<User> {
+    return this.request<User>("/users/me");
+  }
+
+  async updateProfile(data: { full_name?: string }): Promise<User> {
+    return this.request<User>("/users/me", {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async changePassword(currentPassword: string, newPassword: string): Promise<{ message: string }> {
+    return this.request<{ message: string }>("/users/me/change-password", {
+      method: "POST",
+      body: JSON.stringify({
+        current_password: currentPassword,
+        new_password: newPassword,
+      }),
+    });
+  }
+
+  async deleteAccount(password: string): Promise<{ message: string }> {
+    return this.request<{ message: string }>("/users/me", {
+      method: "DELETE",
+      body: JSON.stringify({ password }),
+    });
+  }
+
   // Chat endpoints
-  async sendMessage(message: string, conversationId?: string): Promise<ChatResponse> {
+  async sendMessage(message: string, conversationId?: string, model?: string): Promise<ChatResponse> {
     return this.request<ChatResponse>("/chat/send", {
       method: "POST",
-      body: JSON.stringify({ message, conversation_id: conversationId }),
+      body: JSON.stringify({ message, conversation_id: conversationId, model }),
     });
   }
 
@@ -152,6 +182,30 @@ class ApiClient {
       method: "PATCH",
       body: JSON.stringify({ content }),
     });
+  }
+
+  // Conversation management
+  async renameConversation(id: string, title: string): Promise<Conversation> {
+    return this.request<Conversation>(`/chat/conversations/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ title }),
+    });
+  }
+
+  async deleteConversation(id: string): Promise<void> {
+    return this.request<void>(`/chat/conversations/${id}`, {
+      method: "DELETE",
+    });
+  }
+
+  async clearConversation(id: string): Promise<void> {
+    return this.request<void>(`/chat/conversations/${id}/messages`, {
+      method: "DELETE",
+    });
+  }
+
+  async searchConversations(query: string): Promise<Conversation[]> {
+    return this.request<Conversation[]>(`/chat/conversations/search?q=${encodeURIComponent(query)}`);
   }
 
   // Streaming

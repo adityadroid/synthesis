@@ -31,9 +31,9 @@
 |---|------|------|--------|-------|
 | 010 | Password Reset Flow | both | pending | |
 | 011 | Email Verification | both | pending | |
-| 012 | User Profile Management | both | pending | |
-| 013 | Change Password | both | pending | |
-| 014 | Delete Account | both | pending | |
+| 012 | User Profile Management | both | completed | GET/PATCH /users/me endpoints + Profile page |
+| 013 | Change Password | both | completed | POST /users/me/change-password endpoint |
+| 014 | Delete Account | both | completed | DELETE /users/me with cascade |
 | 015 | OAuth: Google Sign-In | both | pending | |
 | 016 | OAuth: GitHub Sign-In | both | pending | |
 
@@ -41,37 +41,37 @@
 
 | # | Task | Type | Status | Notes |
 |---|------|------|--------|-------|
-| 017 | Multiple Conversations | both | pending | |
-| 018 | Conversation List in Sidebar | fe | pending | |
-| 019 | Rename Conversation | both | pending | |
-| 020 | Delete Conversation | both | pending | |
-| 021 | Clear Conversation | both | pending | |
-| 022 | Switch Between Conversations | fe | pending | |
-| 023 | Auto-save Messages | be | pending | |
-| 024 | Conversation Search | both | pending | |
+| 017 | Multiple Conversations | both | completed | PATCH/DELETE endpoints + service functions |
+| 018 | Conversation List in Sidebar | fe | completed | Hover actions, context menu, search |
+| 019 | Rename Conversation | both | completed | PATCH /chat/conversations/{id} |
+| 020 | Delete Conversation | both | completed | DELETE /chat/conversations/{id} |
+| 021 | Clear Conversation | both | completed | DELETE /chat/conversations/{id}/messages |
+| 022 | Switch Between Conversations | fe | completed | Works with improved sidebar |
+| 023 | Auto-save Messages | be | completed | Auto-save on send to DB |
+| 024 | Conversation Search | both | completed | GET /chat/conversations/search?q= |
 
 ### Multi-Model Support
 
 | # | Task | Type | Status | Notes |
 |---|------|------|--------|-------|
-| 025 | OpenAI Integration | be | pending | |
-| 026 | Anthropic Integration | be | pending | |
-| 027 | Model Selector Dropdown | fe | pending | |
-| 028 | Per-Conversation Model Memory | both | pending | |
-| 029 | Model Info Display in UI | fe | pending | |
+| 025 | OpenAI Integration | be | completed | LLMService class with OpenAI API |
+| 026 | Anthropic Integration | be | completed | AnthropicService with chat/stream_chat |
+| 027 | Model Selector Dropdown | fe | completed | ModelSelector.tsx with search + provider icons |
+| 028 | Per-Conversation Model Memory | both | completed | model field in SendMessageRequest + backend |
+| 029 | Model Info Display in UI | fe | completed | model field in MessageResponse + frontend |
 
 ### Chat Experience
 
 | # | Task | Type | Status | Notes |
 |---|------|------|--------|-------|
-| 030 | Markdown Rendering | fe | pending | |
-| 031 | Code Syntax Highlighting | fe | pending | |
-| 032 | Copy Message Button | fe | pending | |
-| 033 | Copy Individual Code Blocks | fe | pending | |
-| 034 | Message Timestamps | fe | pending | |
-| 035 | Typing Indicator | fe | pending | |
-| 036 | Retry Failed Messages | fe | pending | |
-| 037 | Regenerate AI Response | fe | pending | |
+| 030 | Markdown Rendering | fe | completed | react-markdown + remark-gfm |
+| 031 | Code Syntax Highlighting | fe | completed | react-syntax-highlighter with Prism |
+| 032 | Copy Message Button | fe | completed | Copy button in MessageBubble actions |
+| 033 | Copy Individual Code Blocks | fe | completed | CopyButton with clipboard API |
+| 034 | Message Timestamps | fe | completed | Shows relative time (e.g., "2:30 PM") |
+| 035 | Typing Indicator | fe | completed | Bouncing dots animation during loading |
+| 036 | Retry Failed Messages | fe | completed | handleRetry with user message lookup |
+| 037 | Regenerate AI Response | fe | completed | handleRegenerate on last assistant | |
 
 ---
 
@@ -244,7 +244,7 @@
 
 | Status | Count |
 |--------|-------|
-| pending | 72 |
+| pending | 67 |
 | in_progress | 0 |
-| completed | 35 |
+| completed | 58 |
 | cancelled | 2 |

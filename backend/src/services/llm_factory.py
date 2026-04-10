@@ -7,6 +7,7 @@ from .llm import LLMService
 from .ollama import ollama_service
 from .lm_studio import lm_studio_service
 from .custom_api import custom_api_service
+from .anthropic import anthropic_service
 
 
 class LLMProvider(Enum):
@@ -27,6 +28,7 @@ class LLMFactory:
         self.ollama = ollama_service
         self.lm_studio = lm_studio_service
         self.custom_api = custom_api_service
+        self.anthropic = anthropic_service
 
     def get_provider_for_model(self, model: str) -> LLMProvider:
         """Determine which provider a model belongs to."""
@@ -55,6 +57,7 @@ class LLMFactory:
                 "available": True,
                 "configured": bool(self.openai_service.client.api_key),
             },
+            "anthropic": {"available": False, "configured": False},
             "ollama": {"available": False, "configured": False},
             "lm_studio": {"available": False, "configured": False},
             "custom": {"available": False, "endpoints": []},
@@ -74,8 +77,11 @@ class LLMFactory:
             async def check_async():
                 ollama_available = await self.ollama.is_available()
                 lm_available = await self.lm_studio.is_available()
+                anthropic_available = self.anthropic.is_available()
                 status["ollama"]["available"] = ollama_available
                 status["lm_studio"]["available"] = lm_available
+                status["anthropic"]["available"] = anthropic_available
+                status["anthropic"]["configured"] = anthropic_available
                 status["ollama"]["configured"] = True  # Always configured (localhost)
                 status["lm_studio"]["configured"] = True
                 status["custom"]["endpoints"] = self.custom_api.list_endpoints()
@@ -113,6 +119,9 @@ class LLMFactory:
             if not endpoint_name:
                 raise ValueError("Custom endpoint name required")
             return await self.custom_api.chat(endpoint_name, messages, **kwargs)
+
+        elif provider == LLMProvider.ANTHROPIC:
+            return await self.anthropic.chat(messages, model, **kwargs)
 
         else:
             # Default to OpenAI
@@ -155,6 +164,10 @@ class LLMFactory:
             async for chunk in self.custom_api.stream_chat(
                 endpoint_name, messages, **kwargs
             ):
+                yield chunk
+
+        elif provider == LLMProvider.ANTHROPIC:
+            async for chunk in self.anthropic.stream_chat(messages, model, **kwargs):
                 yield chunk
 
         else:

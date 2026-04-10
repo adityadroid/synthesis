@@ -151,7 +151,7 @@ interface ReactionPickerProps {
 }
 
 export function ReactionPicker({
-  messageId,
+  messageId: _messageId,
   onSelect,
   isOpen,
   onClose,

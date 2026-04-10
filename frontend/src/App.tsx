@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from "./hooks/useAuth";
 import { LoginPage } from "./pages/Login";
 import { SignupPage } from "./pages/Signup";
 import { ChatPage } from "./pages/Chat";
+import { ProfilePage } from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -67,6 +68,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <ChatPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <ProfilePage />
           </ProtectedRoute>
         }
       />

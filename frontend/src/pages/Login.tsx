@@ -69,7 +69,7 @@ export function LoginPage() {
                 autoComplete="email"
               />
             </div>
-            
+
             {/* Password field */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">

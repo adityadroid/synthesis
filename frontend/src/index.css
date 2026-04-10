@@ -3,6 +3,24 @@
 
 @import "tailwindcss";
 
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Custom Scrollbar */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--secondary) transparent;
+  }
+}
+
 @theme {
   /* Fonts */
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -54,16 +72,7 @@
   --radius: 0.5rem;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
+/* Body Styles */
 body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
@@ -97,11 +106,6 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--muted-foreground);
-}
-
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--secondary) transparent;
 }
 
 /* Typography */
